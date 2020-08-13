@@ -17,11 +17,7 @@ components:
       image: ajymau/java-openliberty-odo:0.1
       memoryLimit: 1512Mi
       mountSources: true
-      env:
-        - value: "<ip/hostname of backend db pod>"
-          name: DBHOST 
-        - value: "<port for backend db>" 
-          name: DBPORT 
+
       endpoints:
         - name: 9080/tcp
           targetPort: 9080
@@ -68,12 +64,4 @@ commands:
       group:
         kind: run
         isDefault: true
-  - exec:
-      id: devRunJPA
-      component: devruntime
-      commandLine: mvn -Dmaven.repo.local=/mvn/repository -Dliberty.runtime.version=20.0.0.6 -DhotTests=true pre-integration-test liberty:dev
-      workingDir: /projects/user-app
-      group:
-        kind: run
-        isDefault: false
 

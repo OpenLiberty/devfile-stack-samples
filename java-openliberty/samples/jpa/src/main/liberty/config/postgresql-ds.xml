@@ -7,9 +7,9 @@
                 transactional="true">
         <properties serverName="${DB_HOSTNAME}"
                     portNumber="${DB_PORT}"
-                    databaseName="sampledb"
-                    user="tester"
-                    password="tester"/>
+                    databaseName="${DB_NAME}"
+                    user="${DB_USERNAME}"
+                    password="${DB_PASSWORD}"/>
     </dataSource>
 
     <jdbcDriver id="postgresql-driver"
@@ -26,9 +26,9 @@
                 transactional="false">
         <properties serverName="${DB_HOSTNAME}"
                     portNumber="${DB_PORT}"
-                    databaseName="sampledb"
-                    user="tester"
-                    password="tester"/>
+                    databaseName="${DB_NAME}"
+                    user="${DB_USERNAME}"
+                    password="${DB_PASSWORD}"/>
     </dataSource>
 
     <library id="postgresqlLib">
