@@ -1,0 +1,14 @@
+<server>
+
+  <featureManager>
+    <feature>jaxrs-2.1</feature>
+    <feature>jsonp-1.1</feature>
+    <feature>cdi-2.0</feature>
+    <feature>jpa-2.2</feature>
+    <feature>jdbc-4.3</feature>
+  </featureManager>
+
+<include optional="true" location="${server.config.dir}/postgresql-ds.xml"/>
+<!--  <include optional="true" location="${server.config.dir}/mysql-ds.xml"/> -->
+
+</server>
