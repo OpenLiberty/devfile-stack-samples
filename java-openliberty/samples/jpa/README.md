@@ -92,8 +92,7 @@ After the instalation completes via the Operator Hub, please follow the instruct
 #### Access your Openshift terminal and oc login to the Openshift Cluster
 
 #### Create a namespace called `service-binding-demo` from the pgo CLI
-#### What is the pgo CLI?
-the pgo cli is a terminal command line interface for the Crunchy PostgreSQL Operator - it allows you to create namespaces and database instances that will be managed by the Crunchy PostgreSQL Operator. Then pgo CLI was installed as part of the Crunchy PostgreSQL installation process that you followed earlier.
+> What is the pgo CLI? The pgo cli is a terminal command line interface for the Crunchy PostgreSQL Operator - it allows you to create namespaces and database instances that will be managed by the Crunchy PostgreSQL Operator. Then pgo CLI was installed as part of the Crunchy PostgreSQL installation process that you followed earlier.
 
 The application and the DB needs a namespace to live in so let's create one for them using the pgo CLI:
 
