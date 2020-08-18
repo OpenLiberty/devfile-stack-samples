@@ -1,4 +1,4 @@
-# Binding an Imported Java Spring Boot app to an In-cluster Operator Managed PostgreSQL Database
+# Binding a Java Microservices JPA app to an In-cluster Operator Managed PostgreSQL Database
 
 ## Introduction
 
@@ -34,7 +34,7 @@ demonstrate a sample use case.
 
 Navigate to the `Operators`->`OperatorHub` in the OpenShift console and in the `Developer Tools` category select the `Service Binding Operator` operator
 
-![Service Binding Operator as shown in OperatorHub](../../assets/operator-hub-sbo-screenshot.png)
+![Service Binding Operator as shown in OperatorHub](./assets/operator-hub-sbo-screenshot.png)
 
 Alternatively, you can perform the same task manually using the following command:
 
@@ -75,7 +75,7 @@ or running the following command to install the operator completely:
 make install-service-binding-operator-master
 ```
 
-#### Install the DB operator using an `OperatorSource`
+#### Install the DB operator
 
 Login to your Openshift terminal for all command line operations
 
@@ -83,7 +83,7 @@ Follow the installations instructions for [Installing Crunchy PostgreSQL for Kub
 
 When you have completed the `Before You Begin` instructions, you may access your Openshift Console and install the Crunchy PostgreSQL Operator from the Operator Hub:
 
-![Service Binding Operator as shown in OperatorHub](../../assets/Crunchy.png)
+![Service Binding Operator as shown in OperatorHub](./assets/Crunchy.png)
 
 After the instalation completes via the Operator Hub, please follow the instructions in the `After You Install` section.
 
@@ -92,6 +92,8 @@ After the instalation completes via the Operator Hub, please follow the instruct
 #### Access your Openshift terminal and oc login to the Openshift Cluster
 
 #### Create a namespace called `service-binding-demo` from the pgo CLI
+#### What is the pgo CLI?
+the pgo cli is a terminal command line interface for the Crunchy PostgreSQL Operator - it allows you to create namespaces and database instances that will be managed by the Crunchy PostgreSQL Operator. Then pgo CLI was installed as part of the Crunchy PostgreSQL installation process that you followed earlier.
 
 The application and the DB needs a namespace to live in so let's create one for them using the pgo CLI:
 
@@ -127,7 +129,7 @@ cd to the sample JPA app
 ```
 initialize project using odo
 ```shell
-> odo create java-openliberty
+> odo create
 ```
 Perform an initial odo push of the app to the cluster
 ```shell
@@ -205,7 +207,16 @@ push this link to the cluster
 > odo push
 ```
 
-You have now created a Service Binding Request object in the cluster on behalf of your application. We must manually configure the YAML files associated with it and the Custom Resource Object associated with the database in order to link them both together.
+You have now created a Service Binding Request object called `jpa-servicebindingrequest-example-servicebindingrequest` in the cluster on behalf of your application. We must manually configure the YAML files associated with it and the Custom Resource Object associated with the database in order to link them both together.
+
+You can see this Service Binding Request via kubectl
+```shell
+> kubectl get servicebindingrequest jpa-servicebindingrequest-example-servicebindingrequest
+NAME                                                      AGE
+jpa-servicebindingrequest-example-servicebindingrequest   3m12s
+>
+```
+Or, alternatively, you can inspect the SBR via the Openshift console in Administrator view by navigating to Operators > Installed Operators > Service Binding Operator and clicking on the Service Binding Request tab. Select the Service Binding Request Instance named `jpa-servicebindingrequest-example-servicebindingrequest`
 
 #### Manually configure YAML files
 
@@ -243,9 +254,15 @@ Replace the `backingServiceSelector` block with th efollowing YAML snippet:
 
 Save and re-load this YAML file.
 
-Navigate to Workloads > Secrets
+You have now created an intermediate secret object called `jpa-servicebindingrequest-example-servicebindingrequest` in the cluster that can be used by your application. You can see this secret via kubectl
 
-Notice there is a newly created intermediate secret that takes the same name as the Service Binding Request Object. Within this secret you will find the database access information for connecting to the PostgreSQL db instance.
+```shell
+kubectl get secret jpa-servicebindingrequest-example-servicebindingrequest
+NAME                                                      TYPE     DATA   AGE
+jpa-servicebindingrequest-example-servicebindingrequest   Opaque   5      13m
+>
+```
+Or, alternatively, you can inspect the new intermediate secret via the Openshift console in Administrator view by navigating to Workloads > Secrets and clicking on the secret named `jpa-servicebindingrequest-example-servicebindingrequest` Notice it contains 5 pieces of data all related to the connection information for your PostgreSQL database instance.
 
 Re-deploy the applications using odo
 ```shell
