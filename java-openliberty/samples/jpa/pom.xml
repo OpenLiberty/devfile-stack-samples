@@ -174,7 +174,7 @@
                     <bootstrapProperties>
                         <default.http.port>${http.port}</default.http.port>
                         <default.https.port>${https.port}</default.https.port>
-                        <app.context.root>${app.name}</app.context.root>
+				<!-- <app.context.root>${app.name}</app.context.root> -->
                     </bootstrapProperties>
                 </configuration>
             </plugin>
@@ -219,11 +219,12 @@
                             </includes>
                             <systemPropertyVariables>
                                 <liberty.test.port>${http.port}</liberty.test.port>
-                                <war.name>${app.name}</war.name>
-                                <MICROSHED_TEST_ENV_CLASS>org.microshed.testing.testcontainers.config.HollowTestcontainersConfiguration</MICROSHED_TEST_ENV_CLASS>
+				<war.name>${app.name}</war.name>
+                                <microshed_manual_env>true</microshed_manual_env>	
+					<!--  <MICROSHED_TEST_ENV_CLASS>org.microshed.testing.testcontainers.config.HollowTestcontainersConfiguration</MICROSHED_TEST_ENV_CLASS> -->
                                 <microshed_hostname>localhost</microshed_hostname>
                                 <microshed_http_port>9080</microshed_http_port>
-                                <microshed_https_port>9443</microshed_https_port>
+					<!-- <microshed_https_port>9443</microshed_https_port> -->
                             </systemPropertyVariables>
                         </configuration>
                     </execution>
@@ -241,11 +242,12 @@
                     <reportsDirectory>
                         ${project.build.directory}/test-reports/it
                     </reportsDirectory>
-                    <systemPropertyVariables>
-				<MICROSHED_TEST_ENV_CLASS>org.microshed.testing.testcontainers.config.HollowTestcontainersConfiguration</MICROSHED_TEST_ENV_CLASS>
+		    <systemPropertyVariables>
+			        <microshed_manual_env>true</microshed_manual_env>
+					<!--	<MICROSHED_TEST_ENV_CLASS>org.microshed.testing.testcontainers.config.HollowTestcontainersConfiguration</MICROSHED_TEST_ENV_CLASS> -->
 				<microshed_hostname>localhost</microshed_hostname>
 				<microshed_http_port>9080</microshed_http_port>
-				<microshed_https_port>9443</microshed_https_port>
+					<!-- <microshed_https_port>9443</microshed_https_port> -->
                     </systemPropertyVariables>
                 </configuration>
             </plugin>

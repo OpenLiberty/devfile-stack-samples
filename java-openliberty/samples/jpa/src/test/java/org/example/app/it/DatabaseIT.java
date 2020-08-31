@@ -42,6 +42,8 @@ public class DatabaseIT {
         Person bob = personSvc.getPerson(bobId);
         assertEquals("postgre", bob.name);
         assertEquals(24, bob.age);
+
+	personSvc.removePerson(bobId);
     }
 
     @Test
@@ -56,6 +58,10 @@ public class DatabaseIT {
         assertTrue(allPeople.size() >= 2, "Expected at least 2 people to be registered, but there were only: " + allPeople);
         assertTrue(allPeople.contains(expected1), "Did not find person " + expected1 + " in all people: " + allPeople);
         assertTrue(allPeople.contains(expected2), "Did not find person " + expected2 + " in all people: " + allPeople);
+
+	//delete the test data
+	personSvc.removePerson(person1Id);
+        personSvc.removePerson(person2Id);	
     }
 
 }

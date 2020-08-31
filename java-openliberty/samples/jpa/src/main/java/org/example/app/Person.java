@@ -71,6 +71,18 @@ public class Person implements Serializable {
         this.age = age;
     }
 
+    public long getId(){
+        return id;
+    }
+
+    public String getName(){
+        return name;
+    }
+
+    public int getAge(){
+        return age;
+    }
+
     public Person() {
     }    
  
