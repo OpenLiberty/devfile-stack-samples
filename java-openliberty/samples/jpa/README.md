@@ -34,7 +34,7 @@ demonstrate a sample use case.
 
 Navigate to the `Operators`->`OperatorHub` in the OpenShift console and in the `Developer Tools` category select the `Service Binding Operator` operator
 
-![Service Binding Operator as shown in OperatorHub](./assets/operator-hub-sbo-screenshot.png)
+![Service Binding Operator as shown in OperatorHub](../../assets/operator-hub-sbo-screenshot.png)
 
 Alternatively, you can perform the same task manually using the following command:
 
@@ -83,7 +83,7 @@ Follow the installations instructions for [Installing Crunchy PostgreSQL for Kub
 
 When you have completed the `Before You Begin` instructions, you may access your Openshift Console and install the Crunchy PostgreSQL Operator from the Operator Hub:
 
-![Service Binding Operator as shown in OperatorHub](./assets/Crunchy.png)
+![Service Binding Operator as shown in OperatorHub](../../assets/Crunchy.png)
 
 After the instalation completes via the Operator Hub, please follow the instructions in the `After You Install` section.
 
@@ -128,14 +128,19 @@ cd to the sample JPA app
 ```
 initialize project using odo
 ```shell
-> odo create
+> odo create java-openliberty mysboproj
 ```
+Create an openshift route to access the application
+```shell
+> odo url create --port 9080
+```
+
 Perform an initial odo push of the app to the cluster
 ```shell
 > odo push 
 ```
 
-Teh application is now deployed to the cluster - you can view the status of the cluster and the application test results by streaming the openshift logs to the terminal
+The application is now deployed to the cluster - you can view the status of the cluster and the application test results by streaming the openshift logs to the terminal
 
 ```shell
 > odo log
@@ -162,6 +167,23 @@ Notice the failing tests due to a missing database connection.
 
 ```
 
+You can also access the application via the openshift URL created ealier. To see the URL that was created, list it
+```shell
+> odo url list
+```
+You will see a fully formed URL that can be used in a web browser
+```shell
+$ odo url list
+Found the following URLs for component myjfstesingapp
+NAME                    STATE      URL                                                                                   PORT     SECURE     KIND
+myjfstesingapp-9080     Pushed     http://myjfstesingapp-9080-myjfstesingapp-jfstesting.apps.slobbed.os.fyre.ibm.com     9080     false      route
+```
+
+Use URL to navigate to the CreatePerson.xhtml data entry page and enter requested data, clicking on the "Save" button when complete
+![Create Person xhtml page](../../assets/createPerson.png)
+
+Note that the entry of any data does not result in the data being displayed when you click on the "View Persons Record List" link
+
 #### Express an intent to bind the DB and the application
 
 Now, the only thing that remains is to connect the DB and the application. We will use odo to create a link to the Service Binding Operator and will manually configure the resulting Service Binding Request to 'magically' do the connection for us.
@@ -180,7 +202,7 @@ NAME                                    CRDs
 service-binding-operator.v0.1.1-352     ServiceBindingRequest
 >
 ```
-use odo to create an odo service for the Service Binding Operator
+use odo to create an odo service for the Service Binding Operator by entering the previous result in the following format: `<NAME>/<CRDs>`
 ```shell
 > odo service create service-binding-operator.v0.1.1-352/ServiceBindingRequest
 ```
@@ -206,7 +228,7 @@ push this link to the cluster
 > odo push
 ```
 
-You have now created a Service Binding Request object called `jpa-servicebindingrequest-example-servicebindingrequest` in the cluster on behalf of your application. We must manually configure the YAML files associated with it and the Custom Resource Object associated with the database in order to link them both together.
+You have now created a Service Binding Request object in the namespace on behalf of your application. We must manually configure the YAML files associated with it and the Custom Resource Object associated with the database in order to link them both together.
 
 You can see this Service Binding Request via kubectl
 ```shell
@@ -215,7 +237,7 @@ NAME                                                      AGE
 jpa-servicebindingrequest-example-servicebindingrequest   3m12s
 >
 ```
-Or, alternatively, you can inspect the SBR via the Openshift console in Administrator view by navigating to Operators > Installed Operators > Service Binding Operator and clicking on the Service Binding Request tab. Select the Service Binding Request Instance named `jpa-servicebindingrequest-example-servicebindingrequest`
+Or, alternatively, you can inspect the SBR via the Openshift console in Administrator view by navigating to Operators > Installed Operators > Service Binding Operator and clicking on the Service Binding Request tab. Select the Service Binding Request Instance named `mysboproj-servicebindingrequest-example-servicebindingrequest`
 
 #### Manually configure YAML files
 
@@ -233,6 +255,142 @@ metadata:
     servicebindingoperator.redhat.io/spec.usersecretname-password: 'binding:env:object:secret'
     servicebindingoperator.redhat.io/spec.usersecretname-username: 'binding:env:object:secret'
 ```
+The complete Pgcluster CR Instance YAML once edited:
+```yaml
+apiVersion: crunchydata.com/v1
+kind: Pgcluster
+metadata:
+  annotations:
+    current-primary: my-demo-db
+    primary-deployment: my-demo-db
+    servicebindingoperator.redhat.io/spec.database: 'binding:env:attribute'
+    servicebindingoperator.redhat.io/spec.namespace: 'binding:env:attribute'
+    servicebindingoperator.redhat.io/spec.port: 'binding:env:attribute'
+    servicebindingoperator.redhat.io/spec.usersecretname-password: 'binding:env:object:secret'
+    servicebindingoperator.redhat.io/spec.usersecretname-username: 'binding:env:object:secret'
+  selfLink: /apis/crunchydata.com/v1/namespaces/readmeapp/pgclusters/my-demo-db
+  resourceVersion: '114097331'
+  name: my-demo-db
+  uid: 5e25b9ea-7d11-45c6-9a6b-0165a2dc8dc1
+  creationTimestamp: '2020-09-03T20:15:42Z'
+  generation: 5
+  namespace: readmeapp
+  labels:
+    pgouser: admin
+    pgo-version: 4.4.0
+    pg-cluster: my-demo-db
+    crunchy-pgbadger: 'false'
+    name: my-demo-db
+    autofail: 'true'
+    pgo-backrest: 'true'
+    deployment-name: my-demo-db
+    pg-pod-anti-affinity: ''
+    crunchy_collect: 'false'
+    crunchy-pgha-scope: my-demo-db
+    workflowid: 89863c51-72b9-4e6b-85d3-25b8d51f11bb
+spec:
+  BackrestStorage:
+    accessmode: ReadWriteOnce
+    matchLabels: ''
+    name: ''
+    size: 5Gi
+    storageclass: rook-ceph-cephfs-internal
+    storagetype: dynamic
+    supplementalgroups: ''
+  backrestS3URIStyle: ''
+  port: '5432'
+  exporterport: '9187'
+  ReplicaStorage:
+    accessmode: ReadWriteOnce
+    matchLabels: ''
+    name: ''
+    size: 5Gi
+    storageclass: rook-ceph-cephfs-internal
+    storagetype: dynamic
+    supplementalgroups: ''
+  collectSecretName: my-demo-db-collect-secret
+  resources:
+    memory: 128Mi
+  backrestS3Bucket: ''
+  clustername: my-demo-db
+  usersecretname: my-demo-db-testuser-secret
+  backrestS3VerifyTLS: 'true'
+  tlsOnly: false
+  pgbadgerport: '10000'
+  backrestResources:
+    memory: 48Mi
+  userlabels:
+    crunchy_collect: 'false'
+    pg-pod-anti-affinity: ''
+    pgo-version: 4.4.0
+    workflowid: 89863c51-72b9-4e6b-85d3-25b8d51f11bb
+  name: my-demo-db
+  ccpimage: crunchy-postgres-ha
+  user: testuser
+  standby: false
+  ccpimagetag: ubi7-12.3-4.4.0
+  podAntiAffinity:
+    default: preferred
+    pgBackRest: preferred
+    pgBouncer: preferred
+  backrestS3Region: ''
+  policies: ''
+  backrestS3Endpoint: ''
+  syncReplication: null
+  backrestRepoPath: ''
+  tablespaceMounts: {}
+  status: completed
+  pgBouncer:
+    limits: {}
+    replicas: 0
+    resources:
+      memory: 24Mi
+  backrestLimits: {}
+  customconfig: ''
+  pgoimageprefix: registry.connect.redhat.com/crunchydata
+  shutdown: false
+  limits: {}
+  WALStorage:
+    accessmode: ''
+    matchLabels: ''
+    name: ''
+    size: ''
+    storageclass: ''
+    storagetype: ''
+    supplementalgroups: ''
+  PrimaryStorage:
+    accessmode: ReadWriteOnce
+    matchLabels: ''
+    name: my-demo-db
+    size: 5Gi
+    storageclass: rook-ceph-cephfs-internal
+    storagetype: dynamic
+    supplementalgroups: ''
+  ArchiveStorage:
+    accessmode: ''
+    matchLabels: ''
+    name: ''
+    size: ''
+    storageclass: ''
+    storagetype: ''
+    supplementalgroups: ''
+  tls:
+    caSecret: ''
+    replicationTLSSecret: ''
+    tlsSecret: ''
+  namespace: readmeapp
+  database: my-demo-db
+  replicas: '0'
+  pgDataSource:
+    restoreFrom: ''
+    restoreOpts: ''
+  primarysecretname: my-demo-db-primaryuser-secret
+  ccpimageprefix: registry.connect.redhat.com/crunchydata
+  rootsecretname: my-demo-db-postgres-secret
+status:
+  message: Cluster has been initialized
+  state: pgcluster Initialized
+  ```
 Save this YAML file and reload it.
 
 Navigate to Operators > Installed Operators > Service Binding Operator and click on the 'Instances' tab
@@ -250,44 +408,74 @@ Replace the `backingServiceSelector` block with th efollowing YAML snippet:
       resourceRef: my-demo-db
       version: v1
 ```
+Complete YAML file once updated:
+```yaml
+apiVersion: apps.openshift.io/v1alpha1
+kind: ServiceBindingRequest
+metadata:
+  selfLink: >-
+    /apis/apps.openshift.io/v1alpha1/namespaces/readmeapp/servicebindingrequests/mysboproj-servicebindingrequest-example-servicebindingrequest
+  resourceVersion: '114116646'
+  name: mysboproj-servicebindingrequest-example-servicebindingrequest
+  uid: 20983d16-59f2-4b9b-ae56-e3371480821f
+  creationTimestamp: '2020-09-03T20:47:16Z'
+  generation: 2
+  namespace: readmeapp
+  ownerReferences:
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: mysboproj
+      uid: e3ca87f2-0208-4b00-82bb-db4345f834dd
+  finalizers:
+    - finalizer.servicebindingrequest.openshift.io
+spec:
+  applicationSelector:
+    group: apps
+    resource: deployments
+    resourceRef: mysboproj
+    version: v1
+  backingServiceSelectors:
+    - group: crunchydata.com
+      kind: Pgcluster
+      namespace: service-binding-demo
+      resourceRef: my-demo-db
+      version: v1
+  detectBindingResources: true
+status:
+  conditions:
+    - lastHeartbeatTime: '2020-09-03T21:47:32Z'
+      lastTransitionTime: '2020-09-03T20:47:20Z'
+      status: 'True'
+      type: CollectionReady
+    - lastHeartbeatTime: '2020-09-03T21:47:32Z'
+      lastTransitionTime: '2020-09-03T20:47:20Z'
+      status: 'True'
+      type: InjectionReady
+  secret: mysboproj-servicebindingrequest-example-servicebindingrequest
+```
 
 Save and re-load this YAML file.
 
-You have now created an intermediate secret object called `jpa-servicebindingrequest-example-servicebindingrequest` in the cluster that can be used by your application. You can see this secret via kubectl
+You have now created an intermediate secret object called `mysboproj-servicebindingrequest-example-servicebindingrequest` in the cluster that can be used by your application. You can see this secret via kubectl
 
 ```shell
-kubectl get secret jpa-servicebindingrequest-example-servicebindingrequest
-NAME                                                      TYPE     DATA   AGE
-jpa-servicebindingrequest-example-servicebindingrequest   Opaque   5      13m
+kubectl get secret mysboproj-servicebindingrequest-example-servicebindingrequest
+NAME                                                            TYPE     DATA   AGE
+mysboproj-servicebindingrequest-example-servicebindingrequest   Opaque   5      13m
 >
 ```
-Or, alternatively, you can inspect the new intermediate secret via the Openshift console in Administrator view by navigating to Workloads > Secrets and clicking on the secret named `jpa-servicebindingrequest-example-servicebindingrequest` Notice it contains 5 pieces of data all related to the connection information for your PostgreSQL database instance.
+Or, alternatively, you can inspect the new intermediate secret via the Openshift console in Administrator view by navigating to Workloads > Secrets and clicking on the secret named `mysboproj-servicebindingrequest-example-servicebindingrequest` Notice it contains 5 pieces of data all related to the connection information for your PostgreSQL database instance.
 
 Re-deploy the applications using odo
 ```shell
 odo push -f
 ```
 
-Once the new version is up, display the openshift logs and notice a successful test run
-```shell
-odo log
-```
-Notice the tests are successful and contain data responses from the PostgreSQL database
+Once the new version is up (there will be a slight delay until application is available), navigate to the CreatePerson.xhtml using the URL created in a previous step. Enter requested data and click the "Save" button
+![Create Person xhtml page](../../assets/createPersonDB.png)
 
-```shell
-10886 INFO org.microshed.testing.jaxrs.JsonBProvider  - Response from server: 1
-11081 INFO org.microshed.testing.jaxrs.JsonBProvider  - Response from server: 2
-11222 INFO org.microshed.testing.jaxrs.JsonBProvider  - Response from server: [{"age":1,"id":1,"name":"Person1"},{"age":2,"id":2,"name":"Person2"}]
-11500 INFO org.microshed.testing.jaxrs.JsonBProvider  - Response from server: 3
-11580 INFO org.microshed.testing.jaxrs.JsonBProvider  - Response from server: {"age":24,"id":3,"name":"postgre"}
-[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 11.847 s - in org.example.app.it.DatabaseIT
-[INFO]
-[INFO] Results:
-[INFO]
-[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
-[INFO]
-[INFO] Integration tests finished.
-```
+Notice you are re-directed to the PersonList.xhtml page, where your data is displayed having been input to the postgreSQL database and retrieved for display purposes.
+![Create Person xhtml page](../../assets/displayPeople.png)
 
 You may inspect the database instance itself and query the table to see the data in place by using the postgreSQL command line tool, psql.
 
@@ -315,10 +503,8 @@ You can see the data that appeared in the results of the test run:
 ```shell
  personid | age |  name   
 ----------+-----+---------
-        1 |   1 | Person1
-        2 |   2 | Person2
-        3 |  24 | postgre
-(3 rows)
+        5 |  52 | person1
+(1 row)
 
 my-demo-db=# 
 ```
