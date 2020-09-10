@@ -21,6 +21,7 @@ package org.example.app.it;
 import org.microshed.testing.SharedContainerConfiguration;
 import org.microshed.testing.testcontainers.ApplicationContainer;
 import org.testcontainers.junit.jupiter.Container;
+import java.util.Base64;
 
 public class AppContainerConfig implements SharedContainerConfiguration {
 
@@ -29,6 +30,7 @@ public class AppContainerConfig implements SharedContainerConfiguration {
                     .withAppContextRoot("/jpa-starter-app")
                     .withEnv("DB_HOSTNAME",System.getenv("PGCLUSTER_DATABASE")+"."+System.getenv("PGCLUSTER_NAMESPACE"))
                     .withEnv("DB_PORT", System.getenv("PGCLUSTER_PORT"))
+                    .withEnv("DB_PORT_NUM","5432")
                     .withEnv("DB_NAME",System.getenv("PGCLUSTER_DATABASE"))
                     .withEnv("DB_USERNAME", System.getenv("PGCLUSTER_SECRET_USERNAME"))
                     .withEnv("DB_PASSWORD", System.getenv("PGCLUSTER_SECRET_PASSWORD"));

@@ -1,4 +1,26 @@
 <?xml version='1.0' encoding='utf-8'?>
+
+<!--
+ *
+ * Copyright (c) 2019 IBM Corporation and others
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * You may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+-->
+
 <project xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -174,7 +196,7 @@
                     <bootstrapProperties>
                         <default.http.port>${http.port}</default.http.port>
                         <default.https.port>${https.port}</default.https.port>
-                        <app.context.root>${app.name}</app.context.root>
+				<!-- <app.context.root>${app.name}</app.context.root> -->
                     </bootstrapProperties>
                 </configuration>
             </plugin>
@@ -219,11 +241,12 @@
                             </includes>
                             <systemPropertyVariables>
                                 <liberty.test.port>${http.port}</liberty.test.port>
-                                <war.name>${app.name}</war.name>
-                                <MICROSHED_TEST_ENV_CLASS>org.microshed.testing.testcontainers.config.HollowTestcontainersConfiguration</MICROSHED_TEST_ENV_CLASS>
+				<war.name>${app.name}</war.name>
+                                <microshed_manual_env>true</microshed_manual_env>	
+					<!--  <MICROSHED_TEST_ENV_CLASS>org.microshed.testing.testcontainers.config.HollowTestcontainersConfiguration</MICROSHED_TEST_ENV_CLASS> -->
                                 <microshed_hostname>localhost</microshed_hostname>
                                 <microshed_http_port>9080</microshed_http_port>
-                                <microshed_https_port>9443</microshed_https_port>
+					<!-- <microshed_https_port>9443</microshed_https_port> -->
                             </systemPropertyVariables>
                         </configuration>
                     </execution>
@@ -241,11 +264,12 @@
                     <reportsDirectory>
                         ${project.build.directory}/test-reports/it
                     </reportsDirectory>
-                    <systemPropertyVariables>
-				<MICROSHED_TEST_ENV_CLASS>org.microshed.testing.testcontainers.config.HollowTestcontainersConfiguration</MICROSHED_TEST_ENV_CLASS>
+		    <systemPropertyVariables>
+			        <microshed_manual_env>true</microshed_manual_env>
+					<!--	<MICROSHED_TEST_ENV_CLASS>org.microshed.testing.testcontainers.config.HollowTestcontainersConfiguration</MICROSHED_TEST_ENV_CLASS> -->
 				<microshed_hostname>localhost</microshed_hostname>
 				<microshed_http_port>9080</microshed_http_port>
-				<microshed_https_port>9443</microshed_https_port>
+					<!-- <microshed_https_port>9443</microshed_https_port> -->
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
