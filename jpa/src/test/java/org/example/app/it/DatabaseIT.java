@@ -30,7 +30,6 @@ import org.microshed.testing.jupiter.MicroShedTest;
 import org.example.app.*;
 
 @MicroShedTest
-@SharedContainerConfig(AppContainerConfig.class)
 public class DatabaseIT {
 
 	@RESTClient

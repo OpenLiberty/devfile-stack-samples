@@ -5,11 +5,17 @@
                 jdbcDriverRef="postgresql-driver"
                 type="javax.sql.ConnectionPoolDataSource"
                 transactional="true">
-    <properties serverName="${PGCLUSTER_DATABASE}.${PGCLUSTER_NAMESPACE}"
-                    portNumber="${PGCLUSTER_PORT}"
-                    databaseName="${PGCLUSTER_DATABASE}"
-                    user="${PGCLUSTER_SECRET_USERNAME}"
-                    password="${PGCLUSTER_SECRET_PASSWORD}"/>
+    <properties 
+serverName="${DATABASE_CLUSTERIP}"
+                    
+portNumber="5432"
+                    
+databaseName="${DATABASE_DB_NAME}"
+                    
+user="${DATABASE_DB_USER}"
+                    
+password="${DATABASE_DB_PASSWORD}"
+/>
     </dataSource>
 
     <jdbcDriver id="postgresql-driver"
@@ -24,11 +30,17 @@
                 jdbcDriverRef="postgresql-driver"
                 type="javax.sql.ConnectionPoolDataSource"
                 transactional="false">
-        <properties serverName="${PGCLUSTER_DATABASE}.${PGCLUSTER_NAMESPACE}"
-                    portNumber="${PGCLUSTER_PORT}"
-                    databaseName="${PGCLUSTER_DATABASE}"
-                    user="${PGCLUSTER_SECRET_USERNAME}"
-                    password="${PGCLUSTER_SECRET_PASSWORD}"/>
+        <properties 
+serverName="${DATABASE_CLUSTERIP}"
+                    
+portNumber="5432"
+                    
+databaseName="${DATABASE_DB_NAME}"
+                    
+user="${DATABASE_DB_USER}"
+                    
+password="${DATABASE_DB_PASSWORD}"
+/>
     </dataSource>
 
     <library id="postgresqlLib">
