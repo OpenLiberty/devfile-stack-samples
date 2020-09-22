@@ -42,7 +42,7 @@ public class DatabaseReadinessCheck implements HealthCheck {
         try {
             Connection connection = datasource.getConnection();
             DatabaseMetaData connData = connection.getMetaData();
-            boolean valid = connection.isValid(30);
+            boolean valid = connection.isValid(1);
             return HealthCheckResponse.named(this.getClass().getSimpleName())
                         .withData("databaseProductName", connData.getDatabaseProductName())
                         .withData("databaseProductVersion", connData.getDatabaseProductVersion())
