@@ -7,6 +7,7 @@
     <feature>jpa-2.2</feature>
     <feature>jdbc-4.3</feature>
     <feature>jsf-2.3</feature>
+    <feature>mpHealth-2.2</feature>
   </featureManager>
 
    <include optional="true" location="${server.config.dir}/postgresql-ds.xml"/>
