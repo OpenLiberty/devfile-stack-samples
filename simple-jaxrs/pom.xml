@@ -32,8 +32,8 @@
 		<liberty.env.lmp936>foo</liberty.env.lmp936>
 	</properties>
 
-	<groupId>dev.odo.starter.java-openliberty</groupId>
-	<artifactId>starter-default</artifactId>
+	<groupId>dev.odo.java-openliberty.samples</groupId>
+	<artifactId>simple-jaxrs</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<packaging>war</packaging>
 
