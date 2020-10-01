@@ -1,4 +1,5 @@
-<server description="Liberty server">
+<server description="starter-default">
+
     <featureManager>
         <feature>cdi-2.0 </feature>
         <feature>jaxrs-2.1</feature>
@@ -6,12 +7,16 @@
         <feature>mpHealth-2.2</feature>
         <feature>mpConfig-1.4</feature>
     </featureManager>
-    <keyStore id="defaultKeyStore" location="key.jks" type="jks" password="mpKeystore"/>
-    <httpEndpoint host="*" httpPort="${default.http.port}"
-        httpsPort="${default.https.port}" id="defaultHttpEndpoint"/>
 
-    <httpDispatcher enableWelcomePage="false" />
+    <httpEndpoint host="*" httpPort="9080"
+        httpsPort="9443" id="defaultHttpEndpoint"/>
 
-    <webApplication contextRoot="/" location="starter.war" />
-   
+    <webApplication contextRoot="/" location="starter-default.war" />
+
+    <!--Automatically expand WAR files and EAR files -->
+    <applicationManager autoExpand="true"/>
+
+    <!--Default SSL configuration enables trust for default certificates from the Java runtime -->
+    <ssl id="defaultSSLConfig" trustDefaultCerts="true" />
+    
 </server>

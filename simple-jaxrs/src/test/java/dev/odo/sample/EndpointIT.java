@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 *******************************************************************************/
-package it.dev.appsody.starter;
+package dev.odo.sample;
 
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,15 +28,12 @@ import org.testcontainers.junit.jupiter.Container;
 import dev.appsody.starter.StarterResource;
 
 @MicroShedTest
-public class JaxrsTestit {
+public class EndpointIT {
 	
 	@Container
     public static ApplicationContainer app = new ApplicationContainer()
                     .withAppContextRoot("/")
-                    .withReadinessPath("/health/ready")
-                    .withEnv("DEFAULT_HTTP_PORT", "9080")
-	                .withEnv("DEFAULT_HTTPS_PORT", "9443");
-                    
+                    .withReadinessPath("/health/ready");
 	
 	@RESTClient 
 	public static StarterResource appService;
