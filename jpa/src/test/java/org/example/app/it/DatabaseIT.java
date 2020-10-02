@@ -33,35 +33,35 @@ import org.example.app.*;
 @SharedContainerConfig(AppContainerConfig.class)
 public class DatabaseIT {
 
-    @RESTClient
-    public static PersonResource personSvc;
+	@RESTClient
+	public static PersonResource personSvc;
 
-    @Test
-    public void testGetPerson() {
-        Long bobId = personSvc.createPerson("postgre", 24);
-        Person bob = personSvc.getPerson(bobId);
-        assertEquals("postgre", bob.name);
-        assertEquals(24, bob.age);
+	@Test
+	public void testGetPerson() {
+		Long bobId = personSvc.createPerson("postgre", 24);
+		Person bob = personSvc.getPerson(bobId);
+		assertEquals("postgre", bob.getName());
+		assertEquals(24, bob.getAge());
 
-	personSvc.removePerson(bobId);
-    }
+		personSvc.removePerson(bobId);
+	}
 
-    @Test
-    public void testGetAllPeople() {
-        Long person1Id = personSvc.createPerson("Person1", 1);
-        Long person2Id = personSvc.createPerson("Person2", 2);
+	@Test
+	public void testGetAllPeople() {
+		Long person1Id = personSvc.createPerson("Person1", 1);
+		Long person2Id = personSvc.createPerson("Person2", 2);
 
-        Person expected1 = new Person("Person1", 1, person1Id);
-        Person expected2 = new Person("Person2", 2, person2Id);
+		Person expected1 = new Person("Person1", 1, person1Id);
+		Person expected2 = new Person("Person2", 2, person2Id);
 
-        Collection<Person> allPeople = personSvc.getAllPeople();
-        assertTrue(allPeople.size() >= 2, "Expected at least 2 people to be registered, but there were only: " + allPeople);
-        assertTrue(allPeople.contains(expected1), "Did not find person " + expected1 + " in all people: " + allPeople);
-        assertTrue(allPeople.contains(expected2), "Did not find person " + expected2 + " in all people: " + allPeople);
+		Collection<Person> allPeople = personSvc.getAllPeople();
+		assertTrue(allPeople.size() >= 2, "Expected at least 2 people to be registered, but there were only: " + allPeople);
+		assertTrue(allPeople.contains(expected1), "Did not find person " + expected1 + " in all people: " + allPeople);
+		assertTrue(allPeople.contains(expected2), "Did not find person " + expected2 + " in all people: " + allPeople);
 
-	//delete the test data
-	personSvc.removePerson(person1Id);
-        personSvc.removePerson(person2Id);	
-    }
+		//delete the test data
+		personSvc.removePerson(person1Id);
+		personSvc.removePerson(person2Id);	
+	}
 
 }

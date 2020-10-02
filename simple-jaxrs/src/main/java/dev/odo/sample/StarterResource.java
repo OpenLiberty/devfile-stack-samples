@@ -13,13 +13,16 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 *******************************************************************************/
+package dev.odo.sample;
 
-package dev.appsody.starter;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
 
-import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.core.Application;
+@Path("/resource")
+public class StarterResource {
 
-@ApplicationPath("/starter")
-public class StarterApplication extends Application {
-
+    @GET
+    public String getRequest() {
+        return "Hello! Welcome to Openliberty";
+    }
 }

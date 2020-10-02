@@ -13,16 +13,29 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 *******************************************************************************/
-package dev.appsody.starter;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
+package dev.odo.sample;
 
-@Path("/resource")
-public class StarterResource {
+import javax.enterprise.context.ApplicationScoped;
 
-    @GET
-    public String getRequest() {
-        return "Hello! Welcome to Openliberty";
+import org.eclipse.microprofile.health.HealthCheck;
+import org.eclipse.microprofile.health.HealthCheckResponse;
+import org.eclipse.microprofile.health.Liveness;
+
+@Liveness
+@ApplicationScoped
+public class StarterLivenessCheck implements HealthCheck {
+
+    private boolean isAlive() {
+        // perform health checks here
+
+        return true;
     }
+	
+    @Override
+    public HealthCheckResponse call() {
+        boolean up = isAlive();
+        return HealthCheckResponse.named(this.getClass().getSimpleName()).state(up).build();
+    }
+    
 }
