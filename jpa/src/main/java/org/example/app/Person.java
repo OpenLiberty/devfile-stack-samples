@@ -51,17 +51,17 @@ public class Person implements Serializable {
     @Id
     @Column(name = "personId")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public long id;
+    long id;
 
     @NotNull
     @Size(min = 2, max = 50)
     @Column(name = "name")
-    public String name;
+    String name;
 
     @NotNull
     @PositiveOrZero
     @Column(name = "age")
-    public int age;
+    int age;
      
     public void setName(String name) {
         this.name = name;
