@@ -25,7 +25,6 @@ import org.microshed.testing.jaxrs.RESTClient;
 import org.microshed.testing.jupiter.MicroShedTest;
 import org.microshed.testing.testcontainers.ApplicationContainer;
 import org.testcontainers.junit.jupiter.Container;
-import dev.appsody.starter.StarterResource;
 
 @MicroShedTest
 public class EndpointIT {
@@ -35,9 +34,8 @@ public class EndpointIT {
                     .withAppContextRoot("/")
                     .withReadinessPath("/health/ready");
 	
-	@RESTClient 
+	@RESTClient
 	public static StarterResource appService;
-	
 	
 	@Test
 	public void testAppResponse() {

@@ -3,3 +3,8 @@
 /target/
 
 .odo\env
+.odo\odo-file-index.json
+
+.vscode/
+
+c:\ydosppa\application-stack-samples\simple-jaxrs\.odo\env

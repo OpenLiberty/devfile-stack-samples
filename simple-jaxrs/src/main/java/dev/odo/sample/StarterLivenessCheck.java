@@ -13,27 +13,28 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 *******************************************************************************/
-package dev.appsody.starter.health;
+
+package dev.odo.sample;
 
 import javax.enterprise.context.ApplicationScoped;
 
 import org.eclipse.microprofile.health.HealthCheck;
 import org.eclipse.microprofile.health.HealthCheckResponse;
-import org.eclipse.microprofile.health.Readiness;
+import org.eclipse.microprofile.health.Liveness;
 
-@Readiness
+@Liveness
 @ApplicationScoped
-public class StarterReadinessCheck implements HealthCheck {
+public class StarterLivenessCheck implements HealthCheck {
 
-    private boolean isReady() {
-        // perform readiness checks, e.g. database connection, etc.
+    private boolean isAlive() {
+        // perform health checks here
 
         return true;
     }
 	
     @Override
     public HealthCheckResponse call() {
-        boolean up = isReady();
+        boolean up = isAlive();
         return HealthCheckResponse.named(this.getClass().getSimpleName()).state(up).build();
     }
     
