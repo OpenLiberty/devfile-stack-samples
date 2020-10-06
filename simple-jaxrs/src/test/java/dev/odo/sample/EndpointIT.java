@@ -28,18 +28,18 @@ import org.testcontainers.junit.jupiter.Container;
 
 @MicroShedTest
 public class EndpointIT {
-	
-	@Container
+    
+    @Container
     public static ApplicationContainer app = new ApplicationContainer()
                     .withAppContextRoot("/")
                     .withReadinessPath("/health/ready");
-	
-	@RESTClient
-	public static StarterResource appService;
-	
-	@Test
-	public void testAppResponse() {
-		   assertEquals("Hello! Welcome to Openliberty", appService.getRequest());
-	}
-	               
+    
+    @RESTClient
+    public static StarterResource appService;
+    
+    @Test
+    public void testAppResponse() {
+           assertEquals("Hello! Welcome to Openliberty", appService.getRequest());
+    }
+                   
 }
