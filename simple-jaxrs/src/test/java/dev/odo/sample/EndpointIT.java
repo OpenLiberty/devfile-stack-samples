@@ -15,31 +15,30 @@ limitations under the License.
 *******************************************************************************/
 package dev.odo.sample;
 
-
 import static org.junit.jupiter.api.Assertions.*;
 
-
-
+import dev.odo.starter.AppContainerConfig;
 import org.junit.jupiter.api.Test;
+import org.microshed.testing.SharedContainerConfig;
 import org.microshed.testing.jaxrs.RESTClient;
 import org.microshed.testing.jupiter.MicroShedTest;
 import org.microshed.testing.testcontainers.ApplicationContainer;
-import org.testcontainers.junit.jupiter.Container;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @MicroShedTest
+@SharedContainerConfig(AppContainerConfig.class)
 public class EndpointIT {
-    
-    @Container
-    public static ApplicationContainer app = new ApplicationContainer()
-                    .withAppContextRoot("/")
-                    .withReadinessPath("/health/ready");
+
+    Logger logger = LoggerFactory.getLogger(EndpointIT.class);
     
     @RESTClient
     public static StarterResource appService;
     
     @Test
     public void testAppResponse() {
-           assertEquals("Hello! Welcome to Openliberty", appService.getRequest());
+        logger.info("In test method: testAppResponse");
+        assertEquals("Hello! Welcome to Openliberty", appService.getRequest());
     }
-                   
 }
