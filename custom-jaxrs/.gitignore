@@ -1,0 +1,12 @@
+/.apt_generated/
+/.apt_generated_tests/
+/target/
+
+.odo\env
+.odo\odo-file-index.json
+
+.vscode/
+
+c:\ydosppa\application-stack-samples\simple-jaxrs\.odo\env
+.odo/env
+.odo/odo-file-index.json
