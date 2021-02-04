@@ -51,6 +51,7 @@ Create a database via the Dev4Devs PostgreSQL Database Operator:
 Navigate to Operators > Installed Operators > PostgreSQL Operator by Dev4Ddevs.com
 - Click on the 'Database Database' tab
 - Click on the 'Create Database' button
+- Change the value in the Database Name field to 'sampledatabase'
 - Change the value in the Database User field to 'sampleuser'
 - Change the value in the Database Password field to 'samplepwd'
 - Click on the 'Create' button at bottom of page
@@ -170,20 +171,22 @@ NAME                                             CRDs
 postgresql-operator.v0.1.1                       Backup, Database
 >
 ```
-use odo to create an odo service for the PostgreSQL Database Operator by entering the previous result in the following format: `<NAME>/<CRDs>`
-```shell
->  odo service create postgresql-operator.v0.1.1/Database
-```
-push this service instance to the cluster
-```shell
-> odo push
-```
 
-List this service
+[comment]: <> (This following block is commented out for now, it will not be included)
+[comment]: <> (use odo to create an odo service for the PostgreSQL Database Operator by entering the previous result in the following format: `<NAME>/<CRDs>`)
+[comment]: <> (```shell)
+[comment]: <> (>  odo service create postgresql-operator.v0.1.1/Database)
+[comment]: <> (```)
+[comment]: <> (push this service instance to the cluster)
+[comment]: <> (```shell)
+[comment]: <> (> odo push)
+[comment]: <> (```)
+
+List the service associated with the database created via the PostgreSQL Operator:
 ```shell
 > odo service list
-NAME                  AGE
-Database/database     6m31s
+NAME                        AGE
+Database/sampledatabase     6m31s
 
 >
 ```
@@ -191,7 +194,7 @@ Create a Service Binding Request between the application and the database using 
 `odo link` command: 
 
 ```shell
-> odo link Database/database
+> odo link Database/sampledatabase
 ```
 
 push this link to the cluster
@@ -201,11 +204,19 @@ push this link to the cluster
 
 After the link has been created and pushed a secret will have been created containing the database connection data that the application requires.
 
-You can inspect the new intermediate secret via the Openshift console in Administrator view by navigating to Workloads > Secrets and clicking on the secret named `mysboproj-servicebindingrequest-example-servicebindingrequest` Notice it contains 5 pieces of data all related to the connection information for your PostgreSQL database instance.
+You can inspect the new intermediate secret via the Openshift console in Administrator view by navigating to Workloads > Secrets and clicking on the secret named `mysboproj-database-sampledatabase` Notice it contains 4 pieces of data all related to the connection information for your PostgreSQL database instance.
 
-Re-deploy the applications using odo
+Push the newly created link. This will terminate the existing application pod and start a new application pod.
 ```shell
-odo push -f
+odo push 
+```
+Once the new pod has initialized you can see the secret database connection data as it is injected into the pod environment by executing the following:
+```shell
+> odo exec -- bash -c 'export | grep DATABASE'
+declare -x DATABASE_CLUSTERIP="172.30.36.67"
+declare -x DATABASE_DB_NAME="sampledb"
+declare -x DATABASE_DB_PASSWORD="samplepwd"
+declare -x DATABASE_DB_USER="sampleuser"
 ```
 
 Once the new version is up (there will be a slight delay until application is available), navigate to the CreatePerson.xhtml using the URL created in a previous step. Enter requested data and click the "Save" button
@@ -223,17 +234,17 @@ Click on the terminal tab.
 At the terminal prompt access psql for your database
 
 ```shell
-sh-4.2$ psql my-demo-db
+sh-4.2$ psql sampledb
 psql (12.3)
 Type "help" for help.
 
-my-demo-db=#
+sampledb=#
 ```
 
 Issue the following SQL statement:
 
 ```shell
-my-demo-db=# SELECT * FROM testuser.person;
+sampledb=# SELECT * FROM person;
 ```
 
 You can see the data that appeared in the results of the test run:
@@ -243,5 +254,5 @@ You can see the data that appeared in the results of the test run:
         5 |  52 | person1
 (1 row)
 
-my-demo-db=# 
+sampledb=# 
 ```
