@@ -71,6 +71,10 @@ public class Person implements Serializable {
         this.age = age;
     }
 
+    public void setId(long personId){
+        this.id = personId;
+    }
+
     public long getId(){
         return id;
     }

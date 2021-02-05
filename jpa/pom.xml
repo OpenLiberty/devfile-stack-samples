@@ -29,7 +29,7 @@
     <properties>
         <maven.compiler.target>11</maven.compiler.target>
         <maven.compiler.source>11</maven.compiler.source>
-        <version.maven-war-plugin>3.2.2</version.maven-war-plugin>
+        <version.maven-war-plugin>3.3.1</version.maven-war-plugin>
         <version.maven-surefire-plugin>3.0.0-M1</version.maven-surefire-plugin>
         <version.maven-failsafe-plugin>3.0.0-M1</version.maven-failsafe-plugin>
         <http.port>9080</http.port>
@@ -235,10 +235,10 @@
                                 <liberty.test.port>${http.port}</liberty.test.port>
 				<war.name>${app.name}</war.name>
                                 <microshed_manual_env>true</microshed_manual_env>	
-					<!--  <MICROSHED_TEST_ENV_CLASS>org.microshed.testing.testcontainers.config.HollowTestcontainersConfiguration</MICROSHED_TEST_ENV_CLASS> -->
-                                <microshed_hostname>localhost</microshed_hostname>
+					                      <microshed_hostname>localhost</microshed_hostname>
                                 <microshed_http_port>9080</microshed_http_port>
-					<!-- <microshed_https_port>9443</microshed_https_port> -->
+					
+<microshed_https_port>-1</microshed_https_port>
                             </systemPropertyVariables>
                         </configuration>
                     </execution>
@@ -258,10 +258,10 @@
                     </reportsDirectory>
 		    <systemPropertyVariables>
 			        <microshed_manual_env>true</microshed_manual_env>
-					<!--	<MICROSHED_TEST_ENV_CLASS>org.microshed.testing.testcontainers.config.HollowTestcontainersConfiguration</MICROSHED_TEST_ENV_CLASS> -->
 				<microshed_hostname>localhost</microshed_hostname>
 				<microshed_http_port>9080</microshed_http_port>
-					<!-- <microshed_https_port>9443</microshed_https_port> -->
+					
+              <microshed_https_port>-1</microshed_https_port>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
