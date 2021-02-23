@@ -1,0 +1,46 @@
+schemaVersion: 2.0.0
+metadata:
+  name: java-openliberty
+parent:
+  uri: "https://github.com/OpenLiberty/application-stack/releases/download/devfile-0.4.1/devfile.yaml"
+  components:
+    - name: devruntime
+      container:
+        volumeMounts:
+          - name: m2
+            path: /home/user/.m2
+  commands:
+    - id: build
+      exec: 
+        commandLine: if [ -e /projects/.disable-bld-cmd ];
+                   then
+                       echo "found the disable file" && echo "devBuild command will not run" && exit 0;
+                   else
+                       echo "will run the devBuild command" && mkdir -p /projects/target/liberty
+                                                            && if [ ! -d /projects/target/liberty/wlp ];
+                                                                 then echo "...moving liberty"; mv /opt/ol/wlp /projects/target/liberty; touch ./.liberty-mv;
+                                                               elif [[ -d /projects/target/liberty/wlp && ! -e /projects/.liberty-mv ]];
+                                                                 then echo "STACK WARNING - LIBERTY RUNTIME WAS LOADED FROM HOST";
+                                                               fi
+                                                            && if [ ! -d /home/user/.m2/repository ];
+                                                                 then echo "...copying cached maven dependencies" && cp -r /mvn/repository /home/user/.m2/repository;
+                                                               fi
+                                                            && mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=20.0.0.12 package
+                                                            && touch ./.disable-bld-cmd;
+                   fi
+    - id: run
+      exec:
+        commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=20.0.0.12 -Ddebug=false -DhotTests=true -DcompileWait=3 liberty:dev
+    - id: run-test-off
+      exec:
+        commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=20.0.0.12 -Ddebug=false liberty:dev
+    - id: debug
+      exec:
+        commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=20.0.0.12 -DdebugPort=${DEBUG_PORT} liberty:dev -Dliberty.env.WLP_DEBUG_REMOTE=y
+    - id: test
+      exec:
+        commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository -Dmicroshed_hostname=localhost -Dmicroshed_http_port=9080 -Dmicroshed_manual_env=true -Dmicroshed_app_context_root=/ failsafe:integration-test failsafe:verify
+components:
+  - name: m2
+    volume:
+      size: 3Gi
