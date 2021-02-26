@@ -1,0 +1,81 @@
+schemaVersion: 2.0.0
+metadata:
+  version: 0.1.0
+  description: Java application devfile using Open Liberty runtime
+  name: java-openliberty
+starterProjects:
+  - name: user-app
+    git:
+      remotes:
+        origin: 'https://github.com/OpenLiberty/application-stack-starters.git'
+components:
+  - name: devruntime
+    container:
+      image: maven:3.6-adoptopenjdk-11-openj9
+      memoryLimit: 1512Mi
+      mountSources: true
+      endpoints:
+        - exposure: public
+          path: /
+          name: ep1
+          targetPort: 9080
+          protocol: http
+      volumeMounts:
+        - name: m2
+          path: /home/user/.m2
+  - name: m2
+    volume:
+      size: 3Gi
+commands:
+  - id: build
+    exec:
+      component: devruntime
+      commandLine:  if [ -e /projects/.disable-bld-cmd ];
+                    then
+                      echo "The component was already built. The devBuild command is not run." && exit 0;
+                    else
+                      echo "Running devBuild command ..." &&
+                      mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.1 package &&
+                      touch ./.disable-bld-cmd;
+                 fi
+      workingDir: /projects
+      hotReloadCapable: true
+      group:
+        kind: build 
+        isDefault: true
+  - id: run
+    exec:
+      component: devruntime
+      commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.1 -Ddebug=false -DhotTests=true -DcompileWait=3 liberty:dev
+      workingDir: /projects
+      hotReloadCapable: true
+      group:
+        kind: run
+        isDefault: true
+  - id: run-test-off
+    exec:
+      component: devruntime
+      commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.1 -Ddebug=false liberty:dev
+      workingDir: /projects
+      hotReloadCapable: true
+      group:
+        kind: run
+        isDefault: false
+  - id: debug
+    exec:
+      component: devruntime
+      commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.1 -DdebugPort=${DEBUG_PORT} liberty:dev -Dliberty.env.WLP_DEBUG_REMOTE=y
+      workingDir: /projects
+      hotReloadCapable: true
+      group:
+        kind: debug 
+        isDefault: true
+  - id: test
+    exec:
+      component: devruntime
+      commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository -Dmicroshed_hostname=localhost -Dmicroshed_http_port=9080 -Dmicroshed_manual_env=true -Dmicroshed_app_context_root=/ failsafe:integration-test failsafe:verify
+      workingDir: /projects
+      hotReloadCapable: true
+      group:
+        kind: test 
+        isDefault: true
