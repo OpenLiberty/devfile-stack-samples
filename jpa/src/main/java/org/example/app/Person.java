@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 IBM Corporation and others
+ * Copyright (c) 2019, 2021 IBM Corporation and others
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -18,30 +18,25 @@
  */
 package org.example.app;
 
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.Random;
-
-//import javax.json.bind.annotation.JsonbCreator;
-//import javax.json.bind.annotation.JsonbProperty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PositiveOrZero;
-import javax.validation.constraints.Size;
-
-import java.io.Serializable;
-import javax.persistence.Table;
-import javax.persistence.NamedQuery;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "Person")
 @NamedQuery(name = "Person.findAll", query = "SELECT p FROM Person p")
-@NamedQuery(name = "Person.findPerson", query = "SELECT p FROM Person p WHERE "
-                 + "p.name = :name AND p.age = :age")
+@NamedQuery(name = "Person.findPerson", query = "SELECT p FROM Person p WHERE " + "p.name = :name AND p.age = :age")
 public class Person implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -62,7 +57,7 @@ public class Person implements Serializable {
     @PositiveOrZero
     @Column(name = "age")
     int age;
-     
+
     public void setName(String name) {
         this.name = name;
     }
@@ -71,33 +66,30 @@ public class Person implements Serializable {
         this.age = age;
     }
 
-    public void setId(long personId){
+    public void setId(long personId) {
         this.id = personId;
     }
 
-    public long getId(){
+    public long getId() {
         return id;
     }
 
-    public String getName(){
+    public String getName() {
         return name;
     }
 
-    public int getAge(){
+    public int getAge() {
         return age;
     }
 
     public Person() {
-    }    
- 
+    }
+
     public Person(String name, int age) {
         this(name, age, null);
     }
 
-    //@JsonbCreator
-    public Person(String name,
-                  int age,
-                  Long id) {
+    public Person(String name, int age, Long id) {
         this.name = name;
         this.age = age;
         this.id = id == null ? r.nextLong() : id;
@@ -108,14 +100,11 @@ public class Person implements Serializable {
         if (obj == null || !(obj instanceof Person))
             return false;
         Person other = (Person) obj;
-        return Objects.equals(id, other.id) &&
-               Objects.equals(name, other.name) &&
-               Objects.equals(age, other.age);
+        return Objects.equals(id, other.id) && Objects.equals(name, other.name) && Objects.equals(age, other.age);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(id, name, age);
     }
-
 }
