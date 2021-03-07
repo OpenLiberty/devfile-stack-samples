@@ -2,6 +2,7 @@
 .odo/
 .odo/env
 .odo/odo-file-index.json
+
 # Eclipse 
 .classpath
 .project
@@ -10,3 +11,6 @@
 .metadata
 /.apt_generated/
 /.apt_generated_tests/
+
+# VSCode
+.vscode

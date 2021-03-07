@@ -18,11 +18,13 @@ The provided devfile allows you to start developing your maven built application
 
 ## Inner loop development
 
-1. Copy the devfile to your application directory.
+1. Add the devfile to your project's root directory.
 
 ```
-$ ls /myproject/myApplication
-README.md   devfile.yaml    src     pom.xml     
+cd <your project root dir>
+```
+```
+$ curl -L https://raw.githubusercontent.com/OpenLiberty/application-stack-samples/master/devfiles/no-custom-image/devfile.yaml -o devfile.yaml  
 ```
 
 2. Create your application component.

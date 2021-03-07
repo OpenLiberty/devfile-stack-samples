@@ -1,6 +1,23 @@
+# Copyright (c) 2021 IBM Corporation and others
+#
+# See the NOTICE file(s) distributed with this work for additional
+# information regarding copyright ownership.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# You may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 schemaVersion: 2.0.0
 metadata:
-  name: java-openliberty
+  name: java-ol-m2-volume
+  description: Java application devfile using a volume to store the maven m2 cache
 parent:
   uri: "https://github.com/OpenLiberty/application-stack/releases/download/devfile-0.4.1/devfile.yaml"
   components:
@@ -39,7 +56,7 @@ parent:
         commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=20.0.0.12 -DdebugPort=${DEBUG_PORT} liberty:dev -Dliberty.env.WLP_DEBUG_REMOTE=y
     - id: test
       exec:
-        commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository -Dmicroshed_hostname=localhost -Dmicroshed_http_port=9080 -Dmicroshed_manual_env=true -Dmicroshed_app_context_root=/ failsafe:integration-test failsafe:verify
+        commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository failsafe:integration-test failsafe:verify
 components:
   - name: m2
     volume:
