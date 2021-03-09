@@ -214,7 +214,7 @@ Once the new pod has initialized you can see the secret database connection data
 ```shell
 > odo exec -- bash -c 'export | grep DATABASE'
 declare -x DATABASE_CLUSTERIP="172.30.36.67"
-declare -x DATABASE_DB_NAME="sampledb"
+declare -x DATABASE_DB_NAME="sampledatabase"
 declare -x DATABASE_DB_PASSWORD="samplepwd"
 declare -x DATABASE_DB_USER="sampleuser"
 ```
@@ -234,17 +234,17 @@ Click on the terminal tab.
 At the terminal prompt access psql for your database
 
 ```shell
-sh-4.2$ psql sampledb
+sh-4.2$ psql sampledatabase
 psql (12.3)
 Type "help" for help.
 
-sampledb=#
+sampledatabase=#
 ```
 
 Issue the following SQL statement:
 
 ```shell
-sampledb=# SELECT * FROM person;
+sampledatabase=# SELECT * FROM person;
 ```
 
 You can see the data that appeared in the results of the test run:
@@ -254,5 +254,5 @@ You can see the data that appeared in the results of the test run:
         5 |  52 | person1
 (1 row)
 
-sampledb=# 
+sampledatabase=# 
 ```

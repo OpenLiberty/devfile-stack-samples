@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 IBM Corporation and others
+ * Copyright (c) 2019, 2021 IBM Corporation and others
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -21,46 +21,60 @@ package org.example.app.it;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.net.URI;
 import java.util.Collection;
+import java.util.Collections;
 
+import javax.ws.rs.core.UriBuilder;
+
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+
+import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
+import org.example.app.Person;
+import org.example.app.PersonResource;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.microshed.testing.SharedContainerConfig;
-import org.microshed.testing.jaxrs.RESTClient;
-import org.microshed.testing.jupiter.MicroShedTest;
-import org.example.app.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@MicroShedTest
 public class DatabaseIT {
+	private static Logger log = LoggerFactory.getLogger(DatabaseIT.class);
+	private static PersonResource personSvc;
 
-	@RESTClient
-	public static PersonResource personSvc;
+	@BeforeAll
+	public static void init() throws Exception {
+		URI uri = UriBuilder.fromUri("http://localhost:"+System.getProperty("http.port")).path(System.getProperty("app.path")).build();
+		log.info("URL: " + uri);
+		personSvc = JAXRSClientFactory.create(uri.toString(), PersonResource.class, Collections.singletonList(JacksonJsonProvider.class));
+	}
 
 	@Test
 	public void testGetPerson() {
-		Long bobId = personSvc.createPerson("postgre", 24);
-		Person bob = personSvc.getPerson(bobId);
-		assertEquals("postgre", bob.getName());
-		assertEquals(24, bob.getAge());
+		Person bob = new Person("Bob", 24);
+		Long bobId = personSvc.createPerson("Bob", 24);
+		bob.setId(bobId);
+
+		Person person = personSvc.getPerson(bobId);
+		assertEquals(bob, person);
 
 		personSvc.removePerson(bobId);
 	}
 
 	@Test
 	public void testGetAllPeople() {
-		Long person1Id = personSvc.createPerson("Person1", 1);
-		Long person2Id = personSvc.createPerson("Person2", 2);
+		Person mary = new Person("Mary", 1);
+		Long maryId = personSvc.createPerson(mary.getName(), mary.getAge());
+		mary.setId(maryId);
+		Person james = new Person("James", 2);
+		Long jamesId = personSvc.createPerson(james.getName(), james.getAge());
+		james.setId(jamesId);
 
-		Person expected1 = new Person("Person1", 1, person1Id);
-		Person expected2 = new Person("Person2", 2, person2Id);
+		Collection<Person> people = personSvc.getAllPeople();
+		assertTrue(people.size() >= 2, "Expected at least 2 people to be registered, but there were only: " + people.size());
+		assertTrue(people.contains(mary));
+		assertTrue(people.contains(james));
 
-		Collection<Person> allPeople = personSvc.getAllPeople();
-		assertTrue(allPeople.size() >= 2, "Expected at least 2 people to be registered, but there were only: " + allPeople);
-		assertTrue(allPeople.contains(expected1), "Did not find person " + expected1 + " in all people: " + allPeople);
-		assertTrue(allPeople.contains(expected2), "Did not find person " + expected2 + " in all people: " + allPeople);
-
-		//delete the test data
-		personSvc.removePerson(person1Id);
-		personSvc.removePerson(person2Id);	
+		personSvc.removePerson(maryId);
+		personSvc.removePerson(jamesId);
 	}
-
 }

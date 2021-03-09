@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 IBM Corporation and others
+ * Copyright (c) 2020, 2021 IBM Corporation and others
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,12 +20,14 @@ package org.example.app.health;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+
 import javax.annotation.Resource;
 import javax.enterprise.context.ApplicationScoped;
 import javax.sql.DataSource;
-import org.eclipse.microprofile.health.Readiness;
+
 import org.eclipse.microprofile.health.HealthCheck;
 import org.eclipse.microprofile.health.HealthCheckResponse;
+import org.eclipse.microprofile.health.Readiness;
 
 /**
  * Determines the database's readiness to process application requests.
@@ -44,15 +46,16 @@ public class DatabaseReadinessCheck implements HealthCheck {
             DatabaseMetaData connData = connection.getMetaData();
             boolean valid = connection.isValid(1);
             return HealthCheckResponse.named(this.getClass().getSimpleName())
-                        .withData("databaseProductName", connData.getDatabaseProductName())
-                        .withData("databaseProductVersion", connData.getDatabaseProductVersion())
-                        .withData("driverName", connData.getDriverName())
-                        .withData("driverVersion", connData.getDriverVersion())
-                        .withData("connectionStatus", (valid)? "Successfully validated" : "Failed to establish a valid connection to the database")
-                        .state(valid)
-                        .build();
+                    .withData("databaseProductName", connData.getDatabaseProductName())
+                    .withData("databaseProductVersion", connData.getDatabaseProductVersion())
+                    .withData("driverName", connData.getDriverName())
+                    .withData("driverVersion", connData.getDriverVersion())
+                    .withData("connectionStatus", (valid) ? "Successfully validated"
+                            : "Failed to establish a valid connection to the database")
+                    .state(valid).build();
         } catch (Exception e) {
-            return HealthCheckResponse.named(this.getClass().getSimpleName()).down().withData("message", e.getMessage()).build();
+            return HealthCheckResponse.named(this.getClass().getSimpleName()).down().withData("message", e.getMessage())
+                    .build();
         }
     }
 }
