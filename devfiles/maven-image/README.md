@@ -1,6 +1,6 @@
-# no-custom-image
+# Maven-image
 
-The provided devfile allows you to start developing your maven built applications without the need of a custom image.
+The provided devfile allows you to start developing your maven built applications using an official maven container image.
 
 ## Prerequisites
 
@@ -24,7 +24,7 @@ The provided devfile allows you to start developing your maven built application
 cd <your project root dir>
 ```
 ```
-$ curl -L https://raw.githubusercontent.com/OpenLiberty/application-stack-samples/master/devfiles/no-custom-image/devfile.yaml -o devfile.yaml  
+$ curl -L https://raw.githubusercontent.com/OpenLiberty/application-stack-samples/master/devfiles/maven-image/devfile.yaml -o devfile.yaml  
 ```
 
 2. Create your application component.

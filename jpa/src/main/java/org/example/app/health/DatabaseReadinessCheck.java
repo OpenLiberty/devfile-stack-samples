@@ -52,7 +52,7 @@ public class DatabaseReadinessCheck implements HealthCheck {
                     .withData("driverVersion", connData.getDriverVersion())
                     .withData("connectionStatus", (valid) ? "Successfully validated"
                             : "Failed to establish a valid connection to the database")
-                    .state(valid).build();
+                    .status(valid).build();
         } catch (Exception e) {
             return HealthCheckResponse.named(this.getClass().getSimpleName()).down().withData("message", e.getMessage())
                     .build();

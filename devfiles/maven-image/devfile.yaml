@@ -51,7 +51,7 @@ commands:
                       echo "The component was already built. The devBuild command is not run." && exit 0;
                     else
                       echo "Running devBuild command ..." &&
-                      mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.1 package &&
+                      mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.3 package &&
                       touch ./.disable-bld-cmd;
                  fi
       workingDir: /projects
@@ -62,7 +62,7 @@ commands:
   - id: run
     exec:
       component: devruntime
-      commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.1 -Ddebug=false -DhotTests=true -DcompileWait=3 liberty:dev
+      commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.3 -Ddebug=false -DhotTests=true -DcompileWait=3 liberty:dev
       workingDir: /projects
       hotReloadCapable: true
       group:
@@ -71,7 +71,7 @@ commands:
   - id: run-test-off
     exec:
       component: devruntime
-      commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.1 -Ddebug=false liberty:dev
+      commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.3 -Ddebug=false liberty:dev
       workingDir: /projects
       hotReloadCapable: true
       group:
@@ -80,7 +80,7 @@ commands:
   - id: debug
     exec:
       component: devruntime
-      commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.1 -DdebugPort=${DEBUG_PORT} liberty:dev -Dliberty.env.WLP_DEBUG_REMOTE=y
+      commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.3 -DdebugPort=${DEBUG_PORT} liberty:dev -Dliberty.env.WLP_DEBUG_REMOTE=y
       workingDir: /projects
       hotReloadCapable: true
       group:
