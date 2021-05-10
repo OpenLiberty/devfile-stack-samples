@@ -35,7 +35,7 @@
         <liberty.var.default.http.port>9080</liberty.var.default.http.port>
         <liberty.var.default.https.port>9443</liberty.var.default.https.port>
         <liberty.var.app.path>/</liberty.var.app.path>
-        <version.liberty-maven-plugin>3.3.4</version.liberty-maven-plugin>
+        <version.liberty-maven-plugin>3.3.5-M1</version.liberty-maven-plugin>
     </properties>
 
     <groupId>dev.odo.starter.java-openliberty</groupId>
@@ -114,28 +114,6 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.1.1</version>
-                <executions>
-                    <execution>
-                        <id>copy-resource-adapter-artifacts</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/liberty/wlp/usr/shared/resources</outputDirectory>
-                            <overWriteReleases>false</overWriteReleases>
-                            <overWriteSnapshots>true</overWriteSnapshots>
-                            <excludeTransitive>true</excludeTransitive>
-                            <includeTypes>jar</includeTypes>
-                            <includeGroupIds>mysql,org.postgresql</includeGroupIds>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>${version.maven-war-plugin}</version>
                 <configuration>
@@ -156,6 +134,17 @@
                 <configuration>
                     <stripVersion>true</stripVersion>
                     <serverStartTimeout>360</serverStartTimeout>
+                    <copyDependencies>
+                        <location>${project.build.directory}/liberty/wlp/usr/shared/resources</location>
+                        <dependency>
+                            <groupId>mysql</groupId>
+                            <artifactId>mysql-connector-java</artifactId>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.postgresql</groupId>
+                            <artifactId>postgresql</artifactId>
+                        </dependency>
+                    </copyDependencies>
                 </configuration>
             </plugin>
             <!-- Plugin to run unit tests -->
