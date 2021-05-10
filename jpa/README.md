@@ -48,31 +48,34 @@ Access your Openshift Console and install the Dev4Devs PostgreSQL Operator from 
 - NOTE: Install operator into the "service-binding-demo" namespace created above
 
 Create a database via the Dev4Devs PostgreSQL Database Operator:
-Navigate to Operators > Installed Operators > PostgreSQL Operator by Dev4Ddevs.com
-- Click on the 'Database Database' tab
-- Click on the 'Create Database' button
-- Change the value in the Database Name field to 'sampledatabase'
-- Change the value in the Database User field to 'sampleuser'
-- Change the value in the Database Password field to 'samplepwd'
-- Click on the 'Create' button at bottom of page
+We can use the default configurations of the PostgreSQL Operator to start a Postgres database from it. But since our app uses few specific configuration values, lets make sure they are properly populated in the databse service we start.
 
-Add Database connection annotations to the Database Resource Definition:
-- Navigate to Operators > Installed Operators > PostgreSQL Operator by Dev4Ddevs.com
-- Click on the "Database Database" tab
-- Click on the new database entry in the list
-- Click on the YAML tab
-
-Add the following `annotations` mapping to the `metadata` mapping in the YAML so it looks something like:
-
-```yaml
-metadata:
-  annotations:
-    service.binding/db.name: 'path={.spec.databaseName}'
-    service.binding/db.password: 'path={.spec.databasePassword}'
-    service.binding/db.user: 'path={.spec.databaseUser}'
+First, store the YAML of the service in a file:
+```shell
+> odo service create postgresql-operator.v0.1.1/Database --dry-run > db.yaml
 ```
-- Save the YAML
-- Reload the YAML
+Now, in the `db.yaml` file, modify and add following values under `metadata:` section:
+```yaml
+  name: sampledatabase
+  annotations:
+    service.binding/db_name: 'path={.spec.databaseName}'
+    service.binding/db_password: 'path={.spec.databasePassword}'
+    service.binding/db_user: 'path={.spec.databaseUser}'
+```
+The above configuration ensures that when a database service is started using this file, appropriate annotations are added to it. Annotations help the Service Binding Operator in injecting those values into our application. Hence, above configuration will help Service Binding Operator inject the values for `databaseName`, `databasePassword` and `databaseUser` into our application.
+
+Also, modify the following values (these values already exist, we simply need to change them) under the `spec:` section of the YAML file:
+```yaml
+  databaseName: "sampledb"
+  databasePassword: "samplepwd"
+  databaseUser: "sampleuser"
+```
+
+Now, using odo, create the database from above YAML file:
+```shell
+> odo service create --from-file db.yaml
+```
+This action will create a database instance pod in the `service-binding-demo` namespace. The application will be configured to use this database.
 
 ### Application Developer
 
