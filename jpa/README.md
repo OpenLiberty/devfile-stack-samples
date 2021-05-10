@@ -45,53 +45,55 @@ Create a namespace to contain both the PostgreSQL Operator and the application t
 Access your Openshift Console and install the Dev4Devs PostgreSQL Operator from the Operator Hub:
 
 ![Service Binding Operator as shown in OperatorHub](./assets/Dev4DevsPG.jpg)
-- NOTE: Install operator into the namespace created above
+- NOTE: Install operator into the "service-binding-demo" namespace created above
 
 Create a database via the Dev4Devs PostgreSQL Database Operator:
-Navigate to Operators > Installed Operators > PostgreSQL Operator by Dev4Ddevs.com
-- Click on the 'Database Database' tab
-- Click on the 'Create Database' button
-- Change the value in the Database Name field to 'sampledatabase'
-- Change the value in the Database User field to 'sampleuser'
-- Change the value in the Database Password field to 'samplepwd'
-- Click on the 'Create' button at bottom of page
+We can use the default configurations of the PostgreSQL Operator to start a Postgres database from it. But since our app uses few specific configuration values, lets make sure they are properly populated in the databse service we start.
 
-Add Database connection annotations to the Database Resource Definition:
-- Navigate to Operators > Installed Operators > PostgreSQL Operator by Dev4Ddevs.com
-- Click on the "Database Database" tab
-- Click on the new database entry in the list
-- Click on the YAML tab
-
-Add the following annotation block to the metadata block in the YAML as a sub-entry: 
-
+First, store the YAML of the service in a file:
+```shell
+> odo service create postgresql-operator.v0.1.1/Database --dry-run > db.yaml
 ```
+Now, in the `db.yaml` file, modify and add following values under `metadata:` section:
+```yaml
+  name: sampledatabase
   annotations:
-    service.binding/db.name: 'path={.spec.databaseName}'
-    service.binding/db.password: 'path={.spec.databasePassword}'
-    service.binding/db.user: 'path={.spec.databaseUser}'
+    service.binding/db_name: 'path={.spec.databaseName}'
+    service.binding/db_password: 'path={.spec.databasePassword}'
+    service.binding/db_user: 'path={.spec.databaseUser}'
 ```
-- Save the YAML
-- Reload the YAML
+The above configuration ensures that when a database service is started using this file, appropriate annotations are added to it. Annotations help the Service Binding Operator in injecting those values into our application. Hence, above configuration will help Service Binding Operator inject the values for `databaseName`, `databasePassword` and `databaseUser` into our application.
+
+Also, modify the following values (these values already exist, we simply need to change them) under the `spec:` section of the YAML file:
+```yaml
+  databaseName: "sampledb"
+  databasePassword: "samplepwd"
+  databaseUser: "sampleuser"
+```
+
+Now, using odo, create the database from above YAML file:
+```shell
+> odo service create --from-file db.yaml
+```
+This action will create a database instance pod in the `service-binding-demo` namespace. The application will be configured to use this database.
 
 ### Application Developer
 
-#### Access your Openshift terminal and oc login to the Openshift Cluster
+#### Login to your cluster and clone the demo JPA microservice application
 
-#### Import the demo Java MicroService JPA application
+In this example we will use odo to manage a sample [JPA application](https://github.com/OpenLiberty/application-stack-samples/tree/main/jpa).
 
-In this example we will use odo to manage a sample [Java MicroServices JPA application](https://github.com/OpenLiberty/application-stack-samples.git).
+First, from a terminal session log in to your OpenShift cluster with the `oc login` command, and clone the repo:
 
-From the Openshift terminal, create a project directory `my-sample-jpa-app`
-
-cd to that directory and git clone the sample app repo to this directory.
 ```shell
 > git clone https://github.com/OpenLiberty/application-stack-samples.git
 ```
 cd to the sample JPA app
 ```shell
-> cd ./java-openliberty/jpa/
+> cd jpa
 ```
-initialize project using odo
+We assume we're still using a current namespace of "service-binding-demo" from the previous section, and go ahead and create a java-openliberty typed component using odo
+
 ```shell
 > odo create java-openliberty mysboproj
 ```
@@ -99,6 +101,13 @@ initialize project using odo
 Perform an initial odo push of the app to the cluster
 ```shell
 > odo push 
+```
+
+You might see a delay or even something looking like an error message if the stack image needs to be pulled, so give it a bit of time.  Eventually you should see:
+
+```
+Pushing devfile component "mysboproj"
+ V  Changes successfully pushed to component
 ```
 
 The application is now deployed to the cluster - you can view the status of the cluster and the application test results by streaming the openshift logs to the terminal
@@ -150,8 +159,7 @@ NAME     STATE      URL                                                         
 ep1      Pushed     http://ep1-mysboproj-service-binding-demo.apps.ajm01.cp.fyre.ibm.com     9080     false      route
 ```
 
-Use URL to navigate to the CreatePerson.xhtml data entry page and enter requested data:
-'URL/CreatePerson.xhtml' and enter a user's name and age data via the form.
+Use URL to navigate to the CreatePerson.xhtml data entry page, e.g. `http://ep1-mysboproj-service-binding-demo.apps.ajm01.cp.fyre.ibm.com/CreatePerson.xhtml` and enter a user's name and age data via the form.
 
 Click on the "Save" button when complete
 ![Create Person xhtml page](./assets/createPerson.jpg)
@@ -172,6 +180,7 @@ postgresql-operator.v0.1.1                       Backup, Database
 >
 ```
 
+
 [comment]: <> (This following block is commented out for now, it will not be included)
 [comment]: <> (use odo to create an odo service for the PostgreSQL Database Operator by entering the previous result in the following format: `<NAME>/<CRDs>`)
 [comment]: <> (```shell)
@@ -181,6 +190,7 @@ postgresql-operator.v0.1.1                       Backup, Database
 [comment]: <> (```shell)
 [comment]: <> (> odo push)
 [comment]: <> (```)
+
 
 List the service associated with the database created via the PostgreSQL Operator:
 ```shell
@@ -225,11 +235,11 @@ Once the new version is up (there will be a slight delay until application is av
 Notice you are re-directed to the PersonList.xhtml page, where your data is displayed having been input to the postgreSQL database and retrieved for display purposes.
 ![Create Person xhtml page](../../assets/displayPeople.png)
 
-You may inspect the database instance itself and query the table to see the data in place by using the postgreSQL command line tool, psql.
+You may inspect the database instance itself and query the table to see the data in place by using the postgreSQL command line tool, **psql** .
 
-Navigate to the pod containing your db from the Openshift Console
+Navigate to the pod containing your db from the OpenShift Console
 
-Click on the terminal tab.
+Click on the terminal tab. 
 
 At the terminal prompt access psql for your database
 
