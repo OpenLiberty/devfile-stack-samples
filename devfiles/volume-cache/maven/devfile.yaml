@@ -40,7 +40,7 @@ parent:
                                                                  then echo "STACK WARNING - LIBERTY RUNTIME WAS LOADED FROM HOST";
                                                                fi
                                                             && if [ ! -d /home/user/.m2/repository ];
-                                                                 then echo "...copying cached maven dependencies" && cp -r /mvn/repository /home/user/.m2/repository;
+                                                                 then echo "...copying cached maven dependencies" && cp -r /mvn/repository/* /home/user/.m2/repository/. && rm -rf /mvn/repository;
                                                                fi
                                                             && mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.3 package
                                                             && touch ./.disable-bld-cmd;

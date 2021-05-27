@@ -1,0 +1,64 @@
+# Copyright (c) 2021 IBM Corporation and others
+#
+# See the NOTICE file(s) distributed with this work for additional
+# information regarding copyright ownership.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# You may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+schemaVersion: 2.0.0
+metadata:
+  name: java-ol-gradle-volume
+  version: 0.0.1
+  description: Java application devfile using a volume to store the gradle cache
+parent:
+  uri: "https://github.com/OpenLiberty/application-stack-gradle/releases/download/devfile-0.0.1/devfile.yaml"
+  components:
+    - name: devruntime
+      container:
+        volumeMounts:
+          - name: gradle
+            path: /home/user/.gradle
+  commands:
+    - id: build
+      exec:  
+        commandLine: if [ -e /projects/.disable-bld-cmd ]; then
+                         echo "found the disable file" && echo "devBuild command will not run" && exit 0;
+                     else
+                         echo "will run the devBuild command" && 
+                         mkdir -p /projects/build &&
+                         if [ ! -d /projects/build/wlp ]; then
+                             echo "...moving liberty"; mv /opt/ol/wlp /projects/build/.; touch ./.liberty-marker;
+                         elif [[ -d /projects/build/wlp && ! -e /projects/.liberty-marker ]]; then
+                             echo "STACK WARNING - LIBERTY RUNTIME WAS LOADED FROM HOST";
+                         fi &&
+                         if [ ! -d /home/user/.gradle ]; then
+                             echo "...copying cached dependencies" && cp -r /.gradle/* /home/user/.gradle/. && rm -rf /.gradle;
+                         fi &&
+                         gradle -Dgradle.user.home=/home/user/.gradle assemble -Dliberty.runtime.version=21.0.0.3 &&
+                         touch ./.disable-bld-cmd;
+                     fi
+    - id: run
+      exec:
+        commandLine: gradle -Dgradle.user.home=/home/user/.gradle libertyDev -Dliberty.runtime.version=21.0.0.3 --libertyDebug=false --hotTests --compileWait=3
+    - id: run-test-off
+      exec:
+        commandLine: gradle -Dgradle.user.home=/home/user/.gradle libertyDev -Dliberty.runtime.version=21.0.0.3 --libertyDebug=false
+    - id: debug
+      exec:
+        commandLine: gradle -Dgradle.user.home=/home/user/.gradle libertyDev -Dliberty.runtime.version=21.0.0.3 --libertyDebugPort=${DEBUG_PORT} -Pliberty.server.env.WLP_DEBUG_REMOTE=y
+    - id: test
+      exec:
+        commandLine: gradle -Dgradle.user.home=/home/user/.gradle test -Dliberty.runtime.version=21.0.0.3
+components:
+  - name: gradle
+    volume:
+      size: 3Gi

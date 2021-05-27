@@ -1,0 +1,90 @@
+group = 'dev.odo.starter.java-openliberty'
+description = 'jpa-starter-app'
+
+// Repositories to use.
+repositories {
+    mavenCentral()
+}
+
+// Plugins.
+apply plugin: 'java'
+apply plugin: 'war'
+apply plugin: 'liberty'
+ 
+// Java properties.
+sourceCompatibility = 11
+targetCompatibility = 11
+compileJava.options.encoding = 'UTF-8'
+
+// App/library dependencies.
+configurations {
+    postgresql
+}
+
+// Software dependencies.
+dependencies {
+    providedCompile 'org.eclipse.microprofile:microprofile:4.0.1'
+    providedCompile 'jakarta.platform:jakarta.jakartaee-api:8.0.0'
+    postgresql 'org.postgresql:postgresql:42.1.1'
+    testImplementation 'org.slf4j:slf4j-log4j12:1.7.30'
+    implementation 'mysql:mysql-connector-java:8.0.21'
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.apache.cxf:cxf-rt-rs-client:3.3.6'
+    testImplementation 'cglib:cglib-nodep:3.3.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.6.2'
+    testImplementation 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.9.3'
+}
+
+// Liberty-gradle-plugin.
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'io.openliberty.tools:liberty-gradle-plugin:3.1.2'
+    }
+}
+
+// Property definitions.
+ext {
+    liberty.server.var.'default.http.port' = '9080'
+    liberty.server.var.'default.https.port' = '9443'
+    liberty.server.var.'project.name' = project.name
+    liberty.server.var.'app.path' = '/'
+}
+
+// Open Liberty definitions.
+liberty {
+    runtime = ['group':'io.openliberty','name':'openliberty-kernel','version':System.getProperty("liberty.runtime.version")]
+}
+
+// Task that allows archive dependencies to be copied to the Open Liberty installation.
+task copyDriver(type: Copy) {
+    from configurations.postgresql
+    include '**/*.jar'
+    println project.projectDir.toString()
+    into "${projectDir.toString()}/build/wlp/usr/shared/resources"
+    rename 'postgresql.*jar', 'postgresql.jar'
+}
+
+// Test definitions.
+test {
+    useJUnitPlatform()
+    reports.html.destination = file("$buildDir/reports/unit")
+    reports.junitXml.destination = file("$buildDir/test-results/unit")
+    testLogging {
+            displayGranularity 1
+            showStandardStreams = true
+            showStackTraces = true
+            exceptionFormat = 'full'
+            events 'PASSED', 'FAILED', 'SKIPPED'
+    }
+    
+    systemProperty 'http.port', liberty.server.var.'default.http.port'
+    systemProperty 'app.path',  liberty.server.var.'app.path'
+}
+
+// Task dependencies.
+test.dependsOn 'libertyStart'
+libertyCreate.finalizedBy 'copyDriver'
+clean.dependsOn 'libertyStop'
