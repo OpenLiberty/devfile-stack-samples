@@ -30,6 +30,7 @@
 	    <jta-data-source>jdbc/DefaultDataSource</jta-data-source>
         <!-- needed by eclipselink to do table creates/drops -->
         <non-jta-data-source>jdbc/DefaultDataSourceNonJTA</non-jta-data-source>
+        <class>org.example.app.Person</class>
         <properties>
            <property name="eclipselink.ddl-generation" value="create-tables"/>
            <property name="eclipselink.ddl-generation.output-mode" value="database" />

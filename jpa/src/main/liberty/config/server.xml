@@ -28,5 +28,5 @@
 	
   <httpEndpoint host="*" httpPort="${default.http.port}"
         httpsPort="${default.https.port}" id="defaultHttpEndpoint"/>   
-   <webApplication location="jpa-starter-app.war" contextRoot="/"/>
+   <webApplication location="${project.name}.war" contextRoot="/"/>
 </server>
