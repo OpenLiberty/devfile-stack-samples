@@ -34,7 +34,7 @@
         <version.maven-failsafe-plugin>3.0.0-M1</version.maven-failsafe-plugin>
         <liberty.var.default.http.port>9080</liberty.var.default.http.port>
         <liberty.var.default.https.port>9443</liberty.var.default.https.port>
-        <liberty.var.app.path>/</liberty.var.app.path>
+        <liberty.var.app.path>/api</liberty.var.app.path>
         <version.liberty-maven-plugin>3.3.5-M1</version.liberty-maven-plugin>
     </properties>
 

@@ -28,8 +28,8 @@
             30
         </session-timeout>
     </session-config>
-    <welcome-file-list>
-        <welcome-file>PersonsList.xhtml</welcome-file>
-    </welcome-file-list>
 -->
+    <welcome-file-list>
+        <welcome-file>PersonList.xhtml</welcome-file>
+    </welcome-file-list>
 </web-app>
