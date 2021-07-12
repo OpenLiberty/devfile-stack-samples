@@ -1,5 +1,7 @@
 /target/
-/assets/
+/bin/
+/build/
 
 .odo/env
 .odo/odo-file-index.json
+.gradle/

@@ -25,7 +25,7 @@ starterProjects:
       remotes:
         origin: 'https://github.com/OpenLiberty/application-stack-starters.git'
 components:
-  - name: devruntime
+  - name: dev
     container:
       image: maven:3.6-adoptopenjdk-11-openj9
       memoryLimit: 1512Mi
@@ -45,13 +45,13 @@ components:
 commands:
   - id: build
     exec:
-      component: devruntime
+      component: dev
       commandLine:  if [ -e /projects/.disable-bld-cmd ];
                     then
                       echo "The component was already built. The devBuild command is not run." && exit 0;
                     else
                       echo "Running devBuild command ..." &&
-                      mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.3 package &&
+                      mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.6 package &&
                       touch ./.disable-bld-cmd;
                  fi
       workingDir: /projects
@@ -61,8 +61,8 @@ commands:
         isDefault: true
   - id: run
     exec:
-      component: devruntime
-      commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.3 -Ddebug=false -DhotTests=true -DcompileWait=3 liberty:dev
+      component: dev
+      commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.6 -Ddebug=false -DhotTests=true -DcompileWait=3 liberty:dev
       workingDir: /projects
       hotReloadCapable: true
       group:
@@ -70,8 +70,8 @@ commands:
         isDefault: true
   - id: run-test-off
     exec:
-      component: devruntime
-      commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.3 -Ddebug=false liberty:dev
+      component: dev
+      commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.6 -Ddebug=false liberty:dev
       workingDir: /projects
       hotReloadCapable: true
       group:
@@ -79,8 +79,8 @@ commands:
         isDefault: false
   - id: debug
     exec:
-      component: devruntime
-      commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.3 -DdebugPort=${DEBUG_PORT} liberty:dev -Dliberty.env.WLP_DEBUG_REMOTE=y
+      component: dev
+      commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.6 -DdebugPort=${DEBUG_PORT} liberty:dev -Dliberty.env.WLP_DEBUG_REMOTE=y
       workingDir: /projects
       hotReloadCapable: true
       group:
@@ -88,7 +88,7 @@ commands:
         isDefault: true
   - id: test
     exec:
-      component: devruntime
+      component: dev
       commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository failsafe:integration-test failsafe:verify
       workingDir: /projects
       hotReloadCapable: true
