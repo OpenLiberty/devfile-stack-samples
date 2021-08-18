@@ -1,6 +1,6 @@
-# Maven-image
+# Gradle-image
 
-The provided devfile allows you to start developing your maven built applications using an official maven container image.
+The provided devfile allows you to start developing your gradle built applications using an official gradle container image.
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@ The provided devfile allows you to start developing your maven built application
 
 ## About the Devfile
 
-- It uses a volume mounted to /home/user/.m2 for runtime caching.
+- It uses a volume mounted to /home/user/.gradle for runtime caching.
 
 - No outer loop deployment entries.
 
@@ -24,7 +24,7 @@ The provided devfile allows you to start developing your maven built application
 cd <your project root dir>
 ```
 ```
-$ curl -L https://raw.githubusercontent.com/OpenLiberty/application-stack-samples/main/devfiles/maven-image/devfile.yaml -o devfile.yaml  
+$ curl -L https://raw.githubusercontent.com/OpenLiberty/application-stack-samples/main/devfiles/gradle-image/devfile.yaml -o devfile.yaml  
 ```
 
 2. Create your application component.

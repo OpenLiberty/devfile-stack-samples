@@ -40,13 +40,13 @@ components:
 commands:
   - id: build
     exec:  
-      component: devruntime 
+      component: dev 
       commandLine:  if [ -e /projects/.disable-bld-cmd ];
                     then
                       echo "The component was already built. The devBuild command is not run." && exit 0;
                     else
                       echo "Running devBuild command ..." &&
-                      gradle -Dgradle.user.home=/home/user/.gradle assemble &&
+                      gradle -Dgradle.user.home=/home/user/.gradle assemble -Pliberty.runtime.version=21.0.0.6 &&
                       touch ./.disable-bld-cmd;
                     fi
       workingDir: /projects
@@ -56,7 +56,7 @@ commands:
         isDefault: true
   - id: run
     exec:
-      component: devruntime 
+      component: dev 
       commandLine: gradle -Dgradle.user.home=/home/user/.gradle libertyDev -Pliberty.runtime.version=21.0.0.6 --libertyDebug=false --hotTests --compileWait=3
       workingDir: /projects
       hotReloadCapable: true
@@ -65,7 +65,7 @@ commands:
         isDefault: true
   - id: run-test-off
     exec:
-      component: devruntime
+      component: dev
       commandLine: gradle -Dgradle.user.home=/home/user/.gradle libertyDev -Pliberty.runtime.version=21.0.0.6 --libertyDebug=false
       workingDir: /projects
       hotReloadCapable: true
@@ -74,7 +74,7 @@ commands:
         isDefault: false
   - id: debug
     exec:
-      component: devruntime
+      component: dev
       commandLine: gradle -Dgradle.user.home=/home/user/.gradle libertyDev -Pliberty.runtime.version=21.0.0.6 --libertyDebugPort=${DEBUG_PORT} -Pliberty.server.env.WLP_DEBUG_REMOTE=y
       workingDir: /projects
       hotReloadCapable: true
@@ -83,7 +83,7 @@ commands:
         isDefault: true
   - id: test
     exec:
-      component: devruntime 
+      component: dev 
       commandLine: gradle -Dgradle.user.home=/home/user/.gradle test
       workingDir: /projects
       hotReloadCapable: true

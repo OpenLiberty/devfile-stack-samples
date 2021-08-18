@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This scenario illustrates binding an odo managed Java MicroServices JPA application to an in-cluster Operater managed PostgreSQL Database in the minikube environment.
+This scenario illustrates binding an odo managed Java MicroServices JPA application to an in-cluster Operator managed PostgreSQL Database in the minikube environment.
 
 ## What is odo?
 
@@ -18,10 +18,10 @@ Please follow instructions [here](https://docs.docker.com/engine/install/) for y
 
 ### Install and start and configure minikube
 
-#### <u>Install minikube</u>
+#### Installing minikube
 Follow minikube installation instructions [here](https://minikube.sigs.k8s.io/docs/start/) for your operating system target.
 
-#### <u>Start minikube</u>
+#### Starting minikube
 If running as root, minikube will complain that docker should not be run as root as a matter of practice and will abort start up. To proceed, minikube will need to be started in a manner which will override this protection:
 ```shell
 > minikube start --force --driver=docker --kubernetes-version=v1.19.8
@@ -32,12 +32,13 @@ If you are a non-root user, start minikube as normal (will utilize docker by def
 > minikube start --kubernetes-version=v1.19.8
 ```
 
-#### <u>Configure minikube</u>
+#### Configuring minikube
 ingress config:<br>
 The application requires an ingress addon to allow for routes to be created easily. Configure minikube for ingress by adding ingress as a minikube addon:
 ```shell
 > minikube addons enable ingress
 ```
+
 Note: It is possible that you may face the dockerhub pull rate limit if you do not have a pull secret for your personal free docker hub account in place. During ingress initialization two of the job pods used by ingress may fail to initialize due to pull rate limits. If this happens, and ingress fails to enable, you will have to add a secret for the pulls for the following service accounts:
 
 - ingress-nginx-admission
@@ -48,6 +49,7 @@ to add a pull secret for these service accounts: <br>
 ```shell
 > kubectl config set-context --current --namespace=kube-system
 ```
+
 - create a pull secret:
 ```shell
 > kubectl create secret docker-registry regcred --docker-server=<your-registry-server> --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email>
@@ -101,8 +103,8 @@ Enabling OLM on your minikube instance simplifies installation and upgrades of O
 > minikube addons enable olm
 ```
 
-### Install odo
-Please follow odo installation instructions [here](https://odo.dev/docs/installing-odo/) for your OS distribution.
+### Installing odo
+Please follow the installation instructions outlined in the [odo](https://odo.dev) documentation to install the latest odo CLI (version 2.2.4+).
 
 ## Actions to Perform by Users in 2 Roles
 
@@ -115,7 +117,7 @@ In this example there are 2 roles:
 
 The cluster admin needs to install 2 Operators into the cluster:
 
-* Service Binding Operator
+* Service Binding Operator (version 0.9.1+)
 * A Backing Service Operator
 
 A Backing Service Operator that is "bind-able," in other
@@ -124,13 +126,14 @@ attributes. The Backing Service Operator may represent a database or other servi
 applications. We'll use Dev4Devs PostgreSQL Operator found in the OperatorHub to
 demonstrate a sample use case.
 
-#### Install the Service Binding Operator
+#### Installing the Service Binding Operator
 
 Below `kubectl` command will make the Service Binding Operator available in all namespaces on your minikube:
 ```shell
 > kubectl create -f https://operatorhub.io/install/service-binding-operator.yaml
 ```
-#### Install the DB operator
+
+#### Installing the DB operator
 
 Below `kubectl` command will make the PostgreSQL Operator available in `my-postgresql-operator-dev4devs-com` namespace of your minikube cluster:
 ```shell
@@ -138,88 +141,70 @@ Below `kubectl` command will make the PostgreSQL Operator available in `my-postg
 ```
 **NOTE**: This Operator will be installed in the "my-postgresql-operator-dev4devs-com" namespace and will be usable from this namespace only.
 
-#### <i>Create a database to be used by the sample application</i>
-Since the PostgreSQL Operator we installed in above step is available only in `my-postgresql-operator-dev4devs-com` namespace, let's first make sure that odo uses this namespace to perform any tasks:
-```shell
-> odo project set my-postgresql-operator-dev4devs-com
-```
-
-We can use the default configurations of the PostgreSQL Operator to start a Postgres database from it. But since our app uses few specific configuration values, lets make sure they are properly populated in the databse service we start.
-
-First, store the YAML of the service in a file:
-```shell
-> odo service create postgresql-operator.v0.1.1/Database --dry-run > db.yaml
-```
-Now, in the `db.yaml` file, modify and add following values under `metadata:` section:
-```yaml
-  name: sampledatabase
-  annotations:
-    service.binding/db.name: 'path={.spec.databaseName}'
-    service.binding/db.password: 'path={.spec.databasePassword}'
-    service.binding/db.user: 'path={.spec.databaseUser}'
-```
-Above configuration ensures that when a database service is started using this file, appropriate annotations are added to it. Annotations help the Service Binding Operator in injecting those values into our application. Hence, above configuration will help Service Binding Operator inject the values for `databaseName`, `databasePassword` and `databaseUser` into our application.
-
-Also, modify the following values (these values already exist, we simply need to change them) under `spec:` section of the YAML file:
-```yaml
-  databaseName: "sampledb"
-  databasePassword: "samplepwd"
-  databaseUser: "sampleuser"
-```
-
-Now, using odo, create the database from above YAML file:
-```shell
-> odo service create --from-file db.yaml
-```
-This action will create a database instance pod in the `my-postgresql-operator-dev4devs-com` namespace. The application will be configured to use this database.
-
 ### Application Developer
 
-#### Import the demo Java MicroService JPA application
+#### Importing the demo Java MicroService JPA application
 
 In this example we will use odo to manage a sample [Java MicroServices JPA application](https://github.com/OpenLiberty/application-stack-samples.git).
 
-Clone the sample app repo to your system:
+1. Clone the sample app repo to your system.
+
 ```shell
 > git clone https://github.com/OpenLiberty/application-stack-samples.git
 ```
-`cd` to the sample JPA app
+
+2. `cd` to the sample JPA application.
+
 ```shell
 > cd ./application-stack-samples/jpa
 ```
-initialize project using odo
+
+3. Create a Java Open Liberty component.
+
+- If you want the application to be built and deployed using Maven:
+
 ```shell
 > odo create java-openliberty mysboproj
 ```
 
-Perform an initial odo push of the app to the cluster
+- If you want the application to be built and deployed using Gradle:
+
+```shell
+> odo create java-openliberty-gradle mysboproj
+```
+
+4. Push the application to the cluster.
+
 ```shell
 > odo push 
 ```
 
 The application is now deployed to the cluster - you can view the status of the cluster and the application test results by streaming the openshift logs to the terminal
-
 ```shell
 > odo log
 ```
+
 Notice the failing tests due to an UnknownDatabaseHostException:
 
 ```shell
-[INFO] [err] java.net.UnknownHostException: ${DATABASE_CLUSTERIP}
-[INFO] [err]    at java.base/java.net.AbstractPlainSocketImpl.connect(AbstractPlainSocketImpl.java:220)
-[INFO] [err]    at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:403)
-[INFO] [err]    at java.base/java.net.Socket.connect(Socket.java:609)
-[INFO] [err]    at org.postgresql.core.PGStream.<init>(PGStream.java:68)
-[INFO] [err]    at org.postgresql.core.v3.ConnectionFactoryImpl.openConnectionImpl(ConnectionFactoryImpl.java:144)
-[INFO] [err]    ... 86 more
+[err] Caused by: 
+[err] java.net.UnknownHostException: ${DATABASE_CLUSTERIP}
+[err] 	at java.base/java.net.AbstractPlainSocketImpl.connect(AbstractPlainSocketImpl.java:220)
+[err] 	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:392)
+[err] 	at java.base/java.net.Socket.connect(Socket.java:609)
+[err] 	at org.postgresql.core.PGStream.createSocket(PGStream.java:231)
+[err] 	at org.postgresql.core.PGStream.<init>(PGStream.java:95)
+[err] 	at org.postgresql.core.v3.ConnectionFactoryImpl.tryConnect(ConnectionFactoryImpl.java:98)
+[err] 	at org.postgresql.core.v3.ConnectionFactoryImpl.openConnectionImpl(ConnectionFactoryImpl.java:213)
+[err] 	... 86 more
 [ERROR] Tests run: 2, Failures: 1, Errors: 1, Skipped: 0, Time elapsed: 0.706 s <<< FAILURE! - in org.example.app.it.DatabaseIT
 [ERROR] testGetAllPeople  Time elapsed: 0.33 s  <<< FAILURE!
 org.opentest4j.AssertionFailedError: Expected at least 2 people to be registered, but there were only: [] ==> expected: <true> but was: <false>
-        at org.example.app.it.DatabaseIT.testGetAllPeople(DatabaseIT.java:57)
+        at org.example.app.it.DatabaseIT.testGetAllPeople(DatabaseIT.java:67)
 
 [ERROR] testGetPerson  Time elapsed: 0.047 s  <<< ERROR!
 java.lang.NullPointerException
-        at org.example.app.it.DatabaseIT.testGetPerson(DatabaseIT.java:41)
+        at org.example.app.it.DatabaseIT.testGetPerson(DatabaseIT.java:55)
 
 [INFO]
 [INFO] Results:
@@ -234,129 +219,189 @@ java.lang.NullPointerException
 [ERROR] Integration tests failed: There are test failures.
 ```
 
-You can also access the application via an ingress URL that can be created via odo using an ingress route to access the application:
+This issue occurs because the application, currently, does not have access to data needed to access the database. Note that the database instance has not been created yet. This will be resolved by the next sequence of steps.
+
+#### Creating a database to be used by the sample application
+
+Since the PostgreSQL Operator we installed in above step is available only in `my-postgresql-operator-dev4devs-com` namespace, let's first make sure that odo uses this namespace to perform any tasks:
+
 ```shell
-> odo url create --host $(minikube ip).nip.io
+> odo project set my-postgresql-operator-dev4devs-com
 ```
-You must push this url to activate it:
+
+We can use the PostgreSQL Operator's default configuration to start a Postgres database, but since our application requires specific information about the database, lets make sure that information is properly populated in the database service we start.
+
+1. Display the service providers and services available.
+
+```shell
+> odo catalog list services
+
+Services available through Operators
+NAME                                CRDs
+postgresql-operator.v0.1.1          Backup, Database
+service-binding-operator.v0.9.1     ServiceBinding, ServiceBinding
+```
+
+2. Generate the yaml config of the Database service provided by the postgresql-operator.v0.1.1 operator and store it in a file.
+
+```shell
+> odo service create postgresql-operator.v0.1.1/Database --dry-run > db.yaml
+```
+
+3. Modify the database name, user, and password values under the `spec:` section in `db.yaml`.
+
+```yaml
+  databaseName: "sampledb"
+  databasePassword: "samplepwd"
+  databaseUser: "sampleuser"
+```
+
+4. Add the needed annotations under the `metadata:` section in `db.yaml`.
+
+```yaml
+metadata:
+  name: sampledatabase
+  annotations:
+    service.binding/db_name: 'path={.spec.databaseName}'
+    service.binding/db_password: 'path={.spec.databasePassword}'
+    service.binding/db_user: 'path={.spec.databaseUser}'
+```
+
+5. Generate the Database service devfile configuration.
+
+```shell
+> odo service create --from-file db.yaml
+```
+
+6. Push the updates to the cluster.
+
 ```shell
 > odo push
 ```
 
-To see the URL that was created, list it
-```shell
-> odo url list
-```
-You will see a fully formed URL that can be used in a web browser
-```shell
-[root@pappuses1 jpa]# odo url list
-Found the following URLs for component mysboproj
-NAME               STATE      URL                                           PORT     SECURE     KIND
-mysboproj-9080     Pushed     http://mysboproj-9080.192.168.49.2.nip.io     9080     false      ingress
-[root@pappuses1 jpa]# 
+This action creates a Dev4Ddevs Database resource instance, which in turn triggers the creation of a PostgreSQL database instance in the `my-postgresql-operator-dev4devs-com` namespace.
 
-```
+#### Binding the database and the application
 
-Use URL to navigate to the CreatePerson.xhtml data entry page and enter requested data:
-URL/CreatePerson.xhtml' and enter a user's name and age data via the form.
+The only thing that remains is to bind the PostgreSQL database data to the application.
 
-Click on the "Save" button when complete
-![Create Person xhtml page](./assets/createPerson.jpg)
+1. List the available services to which the application can be bound. The PostgreSQL database service should be listed.
 
-Note that the entry of any data does not result in the data being displayed when you click on the "View Persons Record List" link
-
-#### Express an intent to bind the DB and the application
-
-Now, the only thing that remains is to connect the DB and the application. We will use odo to create a link to the Dev4Devs PostgreSQL Database Operator in order to access the database connection information.
-
-Display the services available to odo: - You will see an entry for the PostgreSQL Database Operator displayed:
-
-```shell
-> odo catalog list services
-Operators available in the cluster
-NAME                                             CRDs
-postgresql-operator.v0.1.1                       Backup, Database
-
-```
-
-[comment]: <> (This following block is commented out for now, it will not be included)
-[comment]: <> (use odo to create an odo service for the PostgreSQL Database Operator by entering the previous result in the following format: `<NAME>/<CRDs>`)
-[comment]: <> (```shell)
-[comment]: <> (>  odo service create postgresql-operator.v0.1.1/Database)
-[comment]: <> (```)
-[comment]: <> (push this service instance to the cluster)
-[comment]: <> (```shell)
-[comment]: <> (> odo push)
-[comment]: <> (```)
-
-List the service associated with the database created via the PostgreSQL Operator:
 ```shell
 > odo service list
-NAME                        AGE
-Database/sampledatabase     6m31s
+NAME                        MANAGED BY ODO      STATE      AGE
+Database/sampledatabase     Yes (mysboproj)     Pushed     50s
 ```
-Create a Service Binding Request between the application and the database using the Service Binding Operator service created in the previous step
-`odo link` command: 
+
+2. Generate the service binding devfile configuration.
 
 ```shell
 > odo link Database/sampledatabase
 ```
 
-push this link to the cluster
+3. push the updates to the cluster.
+
 ```shell
 > odo push
 ```
 
-After the link has been created and pushed a secret will have been created containing the database connection data that the application requires.
+When the updates are pushed to the cluster, a secret containing the database connection information is created and the pod hosting the application is restarted. The new pod now contains the database connection information, from the mentioned secret, as environment variables.
 
-You can inspect the new intermediate secret via the dashboard console in the 'my-postgresql-operator-dev4devs-com' namespace by navigating to Secrets and clicking on the secret named `mysboproj-database-sampledatabase` Notice it contains 4 pieces of data all related to the connection information for your PostgreSQL database instance.
+- Inspecting the secret.
 
-Push the newly created link. This will terminate the existing application pod and start a new application pod.
-```shell
-odo push 
-```
-Once the new pod has initialized you can see the secret database connection data as it is injected into the pod environment by executing the following:
+ You can do this via the dashboard console. Navigate to `Secrets` and clicking on the secret named `mysboproj-database-sampledatabase`. Notice that it contains 4 pieces of data all related to the connection information for your PostgreSQL database instance.
+
+- Inspecting the pod.
+
+To see the newly set environment variables containing database connection information, issue the following command:
+
 ```shell
 > odo exec -- bash -c 'export | grep DATABASE'
-declare -x DATABASE_CLUSTERIP="10.106.182.173"
+```
+
+Output:
+
+```shell
+declare -x DATABASE_CLUSTERIP="172.30.36.67"
 declare -x DATABASE_DB_NAME="sampledb"
 declare -x DATABASE_DB_PASSWORD="samplepwd"
 declare -x DATABASE_DB_USER="sampleuser"
+...
 ```
 
-Once the new version is up (there will be a slight delay until application is available), navigate to the CreatePerson.xhtml using the URL created in a previous step. Enter requested data and click the "Save" button
-![Create Person xhtml page](../../assets/createPersonDB.png)
+#### Running the Application
 
-Notice you are re-directed to the PersonList.xhtml page, where your data is displayed having been input to the postgreSQL database and retrieved for display purposes.
-![Create Person xhtml page](../../assets/displayPeople.png)
+1. Create the URL to access the application through a browser.
 
-You may inspect the database instance itself and query the table to see the data in place by using the postgreSQL command line tool, psql.
-
-Navigate to the pod containing your db from the Openshift Console
-
-Click on the terminal tab.
-
-At the terminal prompt access psql for your database
+- Create the URL.
 
 ```shell
-sh-4.2$ psql sampledb
-psql (12.3)
-Type "help" for help.
-
-sampledb=#
+> odo url create --host $(minikube ip).nip.io
 ```
 
-Issue the following SQL statement:
+- Push the data to the cluster to activate it.
+
+```shell
+> odo push
+```
+
+- To see the URL that was created, list the URL's associated to the application component.
+
+```shell
+> odo url list
+```
+
+Output:
+
+```shell
+Found the following URLs for component mysboproj
+NAME               STATE      URL                                           PORT     SECURE     KIND
+mysboproj-9080     Pushed     http://mysboproj-9080.192.168.49.2.nip.io     9080     false      ingress
+```
+
+2. Open a browser and go to the URL shown by the previous step.
+
+- Click `Create New Person` button. 
+
+![main page](./assets/ol-stack-jpa-app-db-bind-browser-main.png)
+
+- Enter a user's name and age via the form shown on the page, and click the `Save`.
+
+![Create Person xhtml page](./assets/ol-stack-jpa-app-db-bind-browser-data-entry.png)
+
+After you save the data to the postgreSQL database, notice that you are re-directed to the PersonList.xhtml page. The data being displayed is retrieved from the database.
+
+![Person List xhtml page](./assets/ol-stack-jpa-app-db-bind-browser-show-data.png)
+
+You may inspect the database instance itself and query the table to see the data in place by using the **psql** command line tool. For that, navigate to the pod hosting the database instance from the OpenShift Console, click on the terminal tab, and issue the following commands:
+
+- To access the sampledb database.
+```shell
+psql sampledb
+```
+
+Sample output:
+
+```shell
+
+sh-4.2$ psql sampledb
+psql (9.6.10)
+Type "help" for help.
+
+sampledb=# 
+```
+
+- To query the database.
 
 ```shell
 sampledb=# SELECT * FROM person;
 ```
+Sample output:
 
-You can see the data that appeared in the results of the test run:
 ```shell
  personid | age |  name   
 ----------+-----+---------
-        5 |  52 | person1
+        7 |  52 | Person1
 (1 row)
 
 sampledb=# 
