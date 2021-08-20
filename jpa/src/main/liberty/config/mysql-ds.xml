@@ -14,23 +14,29 @@
  limitations under the License.
 -->
 <server>
-    <dataSource jndiName="jdbc/DefaultDataSource"
-                id="mysql-ds">
-      <jdbcDriver libraryRef="MySQLLib"/>
-      <properties databaseName="sampledb"
-                serverName="${DB_HOSTNAME}" portNumber="${DB_PORT}"
-                user="user84U" password="wHbBsT4RwAuNfvhr"/>
-    </dataSource>
-<!-- mysql nontx ds -->
-    <dataSource jndiName="jdbc/DefaultDataSourceNonJTA"
-                transactional="false"
-                id="mysql-ds-nontx">
-      <jdbcDriver libraryRef="MySQLLib"/>
-      <properties databaseName="sampledb"
-                serverName="${DB_HOSTNAME}" portNumber="${DB_PORT}"
-                user="user84U" password="wHbBsT4RwAuNfvhr"/>
-    </dataSource>
-    <library id="MySQLLib">
-      <fileset dir="${shared.resource.dir}" includes="m*.jar"/>
+    <library id="mySQLLib">
+        <fileset dir="${shared.resource.dir}/mysql" includes="*.jar"/>
     </library>
+
+    <jdbcDriver id="mysql-driver" libraryRef="mySQLLib"/>
+
+    <dataSource id="mysql-ds" jndiName="jdbc/DefaultDataSource" jdbcDriverRef="mysql-driver">        
+        <properties databaseName="sampledb"
+                    serverName="${DB_HOSTNAME}" 
+                    portNumber="${DB_PORT}"
+                    user="user84U" 
+                    password="wHbBsT4RwAuNfvhr"/>
+    </dataSource>
+ 
+    <!-- mysql nontx ds -->
+    <dataSource id="mysql-ds-nontx" 
+                jndiName="jdbc/DefaultDataSourceNonJTA"
+                jdbcDriverRef="mysql-driver"
+                transactional="false">
+        <properties databaseName="sampledb"
+                    serverName="${DB_HOSTNAME}" 
+                    portNumber="${DB_PORT}"
+                    user="user84U" 
+                    password="wHbBsT4RwAuNfvhr"/>
+    </dataSource>
 </server>

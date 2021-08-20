@@ -1,0 +1,24 @@
+group = 'dev.odo.starter.java-openliberty'
+description = 'jpa-starter-app-db2'
+
+configurations {
+    db2
+}
+
+dependencies {
+    db2 'com.ibm.db2:jcc:11.5.6.0';
+}
+
+liberty {
+    server{
+        bootstrapProperties = ['db.config.name':"db2-ds.xml"]
+    }
+}
+
+task copyDriver(type: Copy) {
+    from configurations.db2;
+    include '**/*.jar';
+    into "${projectDir.toString()}/build/wlp/usr/shared/resources/db2";
+}
+
+libertyCreate.finalizedBy 'copyDriver'
