@@ -20,7 +20,7 @@ metadata:
   version: 0.0.1
   description: Java application devfile using an offical gradle image
 components:
-  - name: devruntime
+  - name: dev
     container:
       image: gradle:6.8.3-jdk11-openj9
       memoryLimit: 1512Mi
