@@ -8,21 +8,34 @@ repositories {
 apply plugin: 'java'
 apply plugin: 'war'
 apply plugin: 'liberty'
- 
+
+switch(System.getProperty('database')) {
+    case 'mysql': 
+        apply from: 'assets/database/build/mysql.gradle';
+        break;
+    case 'db2':
+        apply from: 'assets/database/build/db2.gradle';
+        break;
+    default:
+        apply from: 'assets/database/build/postgresql.gradle';
+        break;
+}
+
 sourceCompatibility = 11
 targetCompatibility = 11
 compileJava.options.encoding = 'UTF-8'
 
-configurations {
-    postgresql
+ext {
+    liberty.server.var.'default.http.port' = '9080'
+    liberty.server.var.'default.https.port' = '9443'
+    liberty.server.var.'project.name' = project.name
+    liberty.server.var.'app.path' = '/api'
 }
 
 dependencies {
     providedCompile 'org.eclipse.microprofile:microprofile:4.0.1'
     providedCompile 'jakarta.platform:jakarta.jakartaee-api:8.0.0'
-    postgresql 'org.postgresql:postgresql:42.2.23'
     testImplementation 'org.slf4j:slf4j-log4j12:1.7.31'
-    implementation 'mysql:mysql-connector-java:8.0.26'
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.apache.cxf:cxf-rt-rs-client:3.4.4'
     testImplementation 'cglib:cglib-nodep:3.3.0'
@@ -39,19 +52,10 @@ buildscript {
     }
 }
 
-ext {
-    liberty.server.var.'default.http.port' = '9080'
-    liberty.server.var.'default.https.port' = '9443'
-    liberty.server.var.'project.name' = project.name
-    liberty.server.var.'app.path' = '/api'
-}
-
-task copyDriver(type: Copy) {
-    from configurations.postgresql
-    include '**/*.jar'
-    println project.projectDir.toString()
-    into "${projectDir.toString()}/build/wlp/usr/shared/resources"
-    rename 'postgresql.*jar', 'postgresql.jar'
+liberty {
+    server{
+        stripVersion = true
+    }
 }
 
 test {
@@ -71,5 +75,4 @@ test {
 }
 
 test.dependsOn 'libertyStart'
-libertyCreate.finalizedBy 'copyDriver'
 clean.dependsOn 'libertyStop'

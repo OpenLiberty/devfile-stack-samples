@@ -1,0 +1,24 @@
+group = 'dev.odo.starter.java-openliberty'
+description = 'jpa-starter-app-mysql'
+
+configurations {
+    mysql
+}
+
+dependencies {
+    mysql 'mysql:mysql-connector-java:8.0.26'
+}
+
+liberty {
+    server{
+        bootstrapProperties = ['db.config.name':"mysql-ds.xml"]
+    }
+}
+
+task copyDriver(type: Copy) {
+    from configurations.mysql;
+    include '**/*.jar';
+    into "${projectDir.toString()}/build/wlp/usr/shared/resources/mysql";
+}
+
+libertyCreate.finalizedBy 'copyDriver'

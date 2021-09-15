@@ -1,0 +1,32 @@
+# Copyright (c) 2021 IBM Corporation and others
+#
+# See the NOTICE file(s) distributed with this work for additional
+# information regarding copyright ownership.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# You may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+schemaVersion: 2.0.0
+metadata:
+  name: java-openliberty-gradle-db2
+  description: Gradle-built java application devfile that enables usage DB2. 
+parent:
+  uri: "https://github.com/OpenLiberty/application-stack/releases/download/gradle-0.1.0/devfile.yaml"
+  commands:
+    - id: run
+      exec:
+        commandLine: gradle -Dgradle.user.home=/.gradle -Ddatabase=db2 libertyDev -Pliberty.runtime.version=21.0.0.6 --libertyDebug=false --hotTests --compileWait=3
+    - id: run-test-off
+      exec:
+        commandLine: gradle -Dgradle.user.home=/.gradle -Ddatabase=db2 libertyDev -Pliberty.runtime.version=21.0.0.6 --libertyDebug=false
+    - id: debug
+      exec:
+        commandLine: gradle -Dgradle.user.home=/.gradle -Ddatabase=db2 libertyDev -Pliberty.runtime.version=21.0.0.6 --libertyDebugPort=${DEBUG_PORT} -Pliberty.server.env.WLP_DEBUG_REMOTE=y

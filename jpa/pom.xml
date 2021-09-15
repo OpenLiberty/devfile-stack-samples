@@ -69,18 +69,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>42.2.23</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.26</version>
-             <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.13.2</version>
@@ -137,19 +125,9 @@
                 <configuration>
                     <stripVersion>true</stripVersion>
                     <serverStartTimeout>360</serverStartTimeout>
-                    <copyDependencies>
-                        <location>${project.build.directory}/liberty/wlp/usr/shared/resources</location>
-                        <dependency>
-                            <groupId>mysql</groupId>
-                            <artifactId>mysql-connector-java</artifactId>
-                        </dependency>
-                        <dependency>
-                            <groupId>org.postgresql</groupId>
-                            <artifactId>postgresql</artifactId>
-                        </dependency>
-                    </copyDependencies>
                 </configuration>
             </plugin>
+
             <!-- Plugin to run unit tests -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -213,4 +191,112 @@
             </plugin>
         </plugins>
     </build>
+    <!-- Database profiles-->
+    <profiles>
+        <!-- MySQL -->
+        <profile>
+            <id>mysql</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>mysql</groupId>
+                    <artifactId>mysql-connector-java</artifactId>
+                    <version>8.0.26</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+                <build>
+                    <plugins>
+                        <plugin>
+                            <groupId>io.openliberty.tools</groupId>
+                            <artifactId>liberty-maven-plugin</artifactId>
+                            <configuration>
+                                <copyDependencies>
+                                    <location>${project.build.directory}/liberty/wlp/usr/shared/resources/mysql</location>
+                                    <dependency>
+                                        <groupId>mysql</groupId>
+                                        <artifactId>mysql-connector-java</artifactId>
+                                    </dependency>
+                                </copyDependencies>
+                                <bootstrapProperties>
+                                    <db.config.name>mysql-ds.xml</db.config.name>
+                                </bootstrapProperties>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </build>
+        </profile>
+        <!-- PostgreSQL -->
+        <profile>
+            <id>postgresql</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>org.postgresql</groupId>
+                    <artifactId>postgresql</artifactId>
+                    <version>42.2.23</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+                <build>
+                    <plugins>
+                        <plugin>
+                            <groupId>io.openliberty.tools</groupId>
+                            <artifactId>liberty-maven-plugin</artifactId>
+                            <configuration>
+                                <copyDependencies>
+                                    <location>${project.build.directory}/liberty/wlp/usr/shared/resources/postgresql</location>
+                                    <dependency>
+                                        <groupId>org.postgresql</groupId>
+                                        <artifactId>postgresql</artifactId>
+                                    </dependency>
+                                </copyDependencies>
+                                <bootstrapProperties>
+                                    <db.config.name>postgresql-ds.xml</db.config.name>
+                                </bootstrapProperties>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </build>
+        </profile>
+        <!-- db2 -->
+        <profile>
+            <id>db2</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>com.ibm.db2</groupId>
+                    <artifactId>jcc</artifactId>
+                    <version>11.5.6.0</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+                <build>
+                    <plugins>
+                        <plugin>
+                            <groupId>io.openliberty.tools</groupId>
+                            <artifactId>liberty-maven-plugin</artifactId>
+                            <configuration>
+                                <copyDependencies>
+                                    <location>${project.build.directory}/liberty/wlp/usr/shared/resources/db2</location>
+                                    <dependency>
+                                        <groupId>com.ibm.db2</groupId>
+                                        <artifactId>jcc</artifactId>
+                                    </dependency>
+                                </copyDependencies>
+                                <bootstrapProperties>
+                                    <db.config.name>db2-ds.xml</db.config.name>
+                                </bootstrapProperties>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </build>
+        </profile>
+    </profiles>
 </project>

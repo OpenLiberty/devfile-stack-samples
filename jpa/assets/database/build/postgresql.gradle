@@ -1,0 +1,24 @@
+group = 'dev.odo.starter.java-openliberty'
+description = 'jpa-starter-app-postgresql'
+
+configurations {
+    postgresql
+}
+
+dependencies {
+    postgresql 'org.postgresql:postgresql:42.2.23';
+}
+
+liberty {
+    server{
+        bootstrapProperties = ['db.config.name':"postgresql-ds.xml"]
+    }
+}
+
+task copyDriver(type: Copy) {
+           from configurations.postgresql;
+            include '**/*.jar';
+            into "${projectDir.toString()}/build/wlp/usr/shared/resources/postgresql";
+}
+
+libertyCreate.finalizedBy 'copyDriver'

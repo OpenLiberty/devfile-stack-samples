@@ -14,24 +14,9 @@
  limitations under the License.
 -->
 <server>
-<!-- postgresql -->
-    <dataSource id="DefaultDataSource"
-                jndiName="jdbc/DefaultDataSource"
-                jdbcDriverRef="postgresql-driver"
-                type="javax.sql.ConnectionPoolDataSource"
-                transactional="true">
-    <properties 
-serverName="${DATABASE_CLUSTERIP}"
-                    
-portNumber="5432"
-                    
-databaseName="${DATABASE_DB_NAME}"
-                    
-user="${DATABASE_DB_USER}"
-                    
-password="${DATABASE_DB_PASSWORD}"
-/>
-    </dataSource>
+    <library id="postgresqlLib">
+        <fileset dir="${shared.resource.dir}/postgresql" includes="*.jar"/>
+    </library>
 
     <jdbcDriver id="postgresql-driver"
                 libraryRef="postgresqlLib"
@@ -39,26 +24,29 @@ password="${DATABASE_DB_PASSWORD}"
                 javax.sql.ConnectionPoolDataSource="org.postgresql.ds.PGConnectionPoolDataSource"
                 javax.sql.DataSource="org.postgresql.ds.PGPoolingDataSource"/>
 
-<!-- non-tx postgresql ds, needed for table create -->
+    <!-- postgresql ds -->
+    <dataSource id="DefaultDataSource"
+                jndiName="jdbc/DefaultDataSource"
+                jdbcDriverRef="postgresql-driver"
+                type="javax.sql.ConnectionPoolDataSource"
+                transactional="true">
+        <properties serverName="${DATABASE_CLUSTERIP}"
+                    portNumber="5432"
+                    databaseName="${DATABASE_DB_NAME}"
+                    user="${DATABASE_DB_USER}"
+                    password="${DATABASE_DB_PASSWORD}"/>
+    </dataSource>
+
+    <!-- non-tx postgresql ds, needed for table create -->
     <dataSource id="postgresqlDataSourceNonTx"
                 jndiName="jdbc/DefaultDataSourceNonJTA"
                 jdbcDriverRef="postgresql-driver"
                 type="javax.sql.ConnectionPoolDataSource"
                 transactional="false">
-        <properties 
-serverName="${DATABASE_CLUSTERIP}"
-                    
-portNumber="5432"
-                    
-databaseName="${DATABASE_DB_NAME}"
-                    
-user="${DATABASE_DB_USER}"
-                    
-password="${DATABASE_DB_PASSWORD}"
-/>
+        <properties serverName="${DATABASE_CLUSTERIP}"
+                    portNumber="5432"
+                    databaseName="${DATABASE_DB_NAME}"
+                    user="${DATABASE_DB_USER}"
+                    password="${DATABASE_DB_PASSWORD}"/>
     </dataSource>
-
-    <library id="postgresqlLib">
-      <fileset dir="${shared.resource.dir}" includes="p*.jar"/>
-    </library>
 </server>
