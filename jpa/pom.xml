@@ -43,7 +43,7 @@
         <liberty.var.default.http.port>9080</liberty.var.default.http.port>
         <liberty.var.default.https.port>9443</liberty.var.default.https.port>
         <liberty.var.app.path>/api</liberty.var.app.path>
-        <version.liberty-maven-plugin>3.3.5-M2</version.liberty-maven-plugin>
+        <version.liberty-maven-plugin>3.4</version.liberty-maven-plugin>
     </properties>
 
     <dependencies>
@@ -55,7 +55,6 @@
             <type>pom</type>
             <scope>provided</scope>
         </dependency>
-        <!-- For tests -->
         <dependency>
             <groupId>jakarta.platform</groupId>
             <artifactId>jakarta.jakartaee-api</artifactId>
@@ -63,22 +62,23 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.31</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>42.2.23</version>
-            <scope>test</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>8.0.26</version>
-             <scope>test</scope>
+             <scope>provided</scope>
+        </dependency>
+        <!-- For tests -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.31</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
