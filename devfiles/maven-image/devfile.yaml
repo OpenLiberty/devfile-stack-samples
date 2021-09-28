@@ -14,7 +14,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-schemaVersion: 2.0.0
+schemaVersion: 2.1.0
 metadata:
   version: 0.1.0
   description: Java application devfile using an offical maven image
@@ -51,7 +51,7 @@ commands:
                       echo "The component was already built. The devBuild command is not run." && exit 0;
                     else
                       echo "Running devBuild command ..." &&
-                      mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.6 package &&
+                      mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.9 package &&
                       touch ./.disable-bld-cmd;
                  fi
       workingDir: /projects
@@ -62,7 +62,7 @@ commands:
   - id: run
     exec:
       component: dev
-      commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.6 -Ddebug=false -DhotTests=true -DcompileWait=3 liberty:dev
+      commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.9 -Ddebug=false -DhotTests=true -DcompileWait=3 liberty:dev
       workingDir: /projects
       hotReloadCapable: true
       group:
@@ -71,7 +71,7 @@ commands:
   - id: run-test-off
     exec:
       component: dev
-      commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.6 -Ddebug=false liberty:dev
+      commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.9 -Ddebug=false liberty:dev
       workingDir: /projects
       hotReloadCapable: true
       group:
@@ -80,7 +80,7 @@ commands:
   - id: debug
     exec:
       component: dev
-      commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.6 -DdebugPort=${DEBUG_PORT} liberty:dev -Dliberty.env.WLP_DEBUG_REMOTE=y
+      commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.9 -DdebugPort=${DEBUG_PORT} liberty:dev -Dliberty.env.WLP_DEBUG_REMOTE=y
       workingDir: /projects
       hotReloadCapable: true
       group:
@@ -89,7 +89,7 @@ commands:
   - id: test
     exec:
       component: dev
-      commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository failsafe:integration-test failsafe:verify
+      commandLine: mvn compiler:compile -Dmaven.repo.local=/home/user/.m2/repository failsafe:integration-test failsafe:verify
       workingDir: /projects
       hotReloadCapable: true
       group:

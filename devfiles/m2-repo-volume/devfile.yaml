@@ -14,12 +14,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-schemaVersion: 2.0.0
+schemaVersion: 2.1.0
 metadata:
   name: java-ol-m2-volume
   description: Java application devfile using a volume to store the maven m2 cache
 parent:
-  uri: "https://github.com/OpenLiberty/application-stack/releases/download/maven-0.6.0/devfile.yaml"
+  uri: "https://github.com/OpenLiberty/application-stack/releases/download/maven-0.7.0/devfile.yaml"
   components:
     - name: dev
       container:
@@ -42,21 +42,21 @@ parent:
                                                             && if [ ! -d /home/user/.m2/repository ];
                                                                  then echo "...copying cached maven dependencies" && cp -r /mvn/repository /home/user/.m2/repository;
                                                                fi
-                                                            && mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.6 package
+                                                            && mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.9 package
                                                             && touch ./.disable-bld-cmd;
                    fi
     - id: run
       exec:
-        commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.6 -Ddebug=false -DhotTests=true -DcompileWait=3 liberty:dev
+        commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.9 -Ddebug=false -DhotTests=true -DcompileWait=3 liberty:dev
     - id: run-test-off
       exec:
-        commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.6 -Ddebug=false liberty:dev
+        commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.9 -Ddebug=false liberty:dev
     - id: debug
       exec:
-        commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.6 -DdebugPort=${DEBUG_PORT} liberty:dev -Dliberty.env.WLP_DEBUG_REMOTE=y
+        commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.9 -DdebugPort=${DEBUG_PORT} liberty:dev -Dliberty.env.WLP_DEBUG_REMOTE=y
     - id: test
       exec:
-        commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository failsafe:integration-test failsafe:verify
+        commandLine: mvn compiler:compile -Dmaven.repo.local=/home/user/.m2/repository failsafe:integration-test failsafe:verify
 components:
   - name: m2
     volume:

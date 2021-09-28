@@ -24,19 +24,19 @@ Follow minikube installation instructions [here](https://minikube.sigs.k8s.io/do
 #### Starting minikube
 If running as root, minikube will complain that docker should not be run as root as a matter of practice and will abort start up. To proceed, minikube will need to be started in a manner which will override this protection:
 ```shell
-> minikube start --force --driver=docker --kubernetes-version=v1.19.8
+minikube start --force --driver=docker --kubernetes-version=v1.19.8
 ```
 
 If you are a non-root user, start minikube as normal (will utilize docker by default):
 ```shell
-> minikube start --kubernetes-version=v1.19.8
+minikube start --kubernetes-version=v1.19.8
 ```
 
 #### Configuring minikube
 ingress config:<br>
 The application requires an ingress addon to allow for routes to be created easily. Configure minikube for ingress by adding ingress as a minikube addon:
 ```shell
-> minikube addons enable ingress
+minikube addons enable ingress
 ```
 
 Note: It is possible that you may face the dockerhub pull rate limit if you do not have a pull secret for your personal free docker hub account in place. During ingress initialization two of the job pods used by ingress may fail to initialize due to pull rate limits. If this happens, and ingress fails to enable, you will have to add a secret for the pulls for the following service accounts:
@@ -47,12 +47,12 @@ Note: It is possible that you may face the dockerhub pull rate limit if you do n
 to add a pull secret for these service accounts: <br>
 - switch to the kube-system context:
 ```shell
-> kubectl config set-context --current --namespace=kube-system
+kubectl config set-context --current --namespace=kube-system
 ```
 
 - create a pull secret:
 ```shell
-> kubectl create secret docker-registry regcred --docker-server=<your-registry-server> --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email>
+kubectl create secret docker-registry regcred --docker-server=<your-registry-server> --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email>
 ```
 ~~~
         where:
@@ -64,8 +64,11 @@ to add a pull secret for these service accounts: <br>
 
 - add this new cred ('regcred' in the example above) to the default service account in minikube:
 ```shell
-> kubectl patch serviceaccount ingress-nginx-admission -p '{"imagePullSecrets": [{"name": "regcred"}]}'
-> kubectl patch serviceaccount ingress-nginx -p '{"imagePullSecrets": [{"name": "regcred"}]}'
+kubectl patch serviceaccount ingress-nginx-admission -p '{"imagePullSecrets": [{"name": "regcred"}]}'
+```
+
+```shell
+kubectl patch serviceaccount ingress-nginx -p '{"imagePullSecrets": [{"name": "regcred"}]}'
 ```
 
  Default Service Account Pull Secret patch:<br>
@@ -73,12 +76,12 @@ to add a pull secret for these service accounts: <br>
 
  - switch to th edefault context:
  ```shell
- > kubectl config set-context --current --namespace=default
+ kubectl config set-context --current --namespace=default
 ```
 
  - create the same docker-registry secret configured for your docker , now for the default minikube context:
  ```shell
- > kubectl create secret docker-registry regcred --docker-server=<your-registry-server> --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email>
+ kubectl create secret docker-registry regcred --docker-server=<your-registry-server> --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email>
  ```
 
 
@@ -92,7 +95,7 @@ to add a pull secret for these service accounts: <br>
 
 - Add this new cred ('regcred' in the example above) to the default service account in minikube:
 ```shell
-> kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "regcred"}]}'
+kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "regcred"}]}'
 ```
 Kubernetes Dashboard graphical UI config:<br>
  It is helpful to make use of the basic kubernetes dashboard UI to interact with the various kubernetes entities in a graphical way. Please refer to the directions [here](https://minikube.sigs.k8s.io/docs/handbook/dashboard/) for enabling and starting the dashboard. Please note, this require the installation of and access to a desktop environment in order to make use of the dashboard. (GNOME + xrdb for example)
@@ -100,7 +103,7 @@ Kubernetes Dashboard graphical UI config:<br>
 Operator Lifecycle Manager (OLM) config:
 Enabling OLM on your minikube instance simplifies installation and upgrades of Operators available from [OperatorHub](https://operatorhub.io). Enable OLM with below command:
 ```shell
-> minikube addons enable olm
+minikube addons enable olm
 ```
 
 ### Installing odo
@@ -130,16 +133,41 @@ demonstrate a sample use case.
 
 Below `kubectl` command will make the Service Binding Operator available in all namespaces on your minikube:
 ```shell
-> kubectl create -f https://operatorhub.io/install/service-binding-operator.yaml
+kubectl create -f https://operatorhub.io/install/service-binding-operator.yaml
 ```
 
 #### Installing the DB operator
 
 Below `kubectl` command will make the PostgreSQL Operator available in `my-postgresql-operator-dev4devs-com` namespace of your minikube cluster:
 ```shell
-> kubectl create -f https://operatorhub.io/install/postgresql-operator-dev4devs-com.yaml
+kubectl create -f https://operatorhub.io/install/postgresql-operator-dev4devs-com.yaml
 ```
 **NOTE**: This Operator will be installed in the "my-postgresql-operator-dev4devs-com" namespace and will be usable from this namespace only.
+
+#### Providing Service Resource Access to the Service Binding Operator
+
+Starting with v0.10.0, the Service Binding Operator, requires explicit permissions to access service resources.
+
+Create a ClusterRole resource.
+
+```shell
+cat <<EOF | kubectl apply -f-
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: sbo-service-view
+  labels:
+    service.binding/controller: "true"
+rules:
+  - apiGroups:
+      - postgresql.dev4devs.com
+    resources:
+      - databases
+    verbs:
+      - get
+      - list
+EOF
+```
 
 ### Application Developer
 
@@ -150,13 +178,13 @@ In this example we will use odo to manage a sample [Java MicroServices JPA appli
 1. Clone the sample app repo to your system.
 
 ```shell
-> git clone https://github.com/OpenLiberty/application-stack-samples.git
+git clone https://github.com/OpenLiberty/application-stack-samples.git
 ```
 
 2. `cd` to the sample JPA application.
 
 ```shell
-> cd ./application-stack-samples/jpa
+cd ./application-stack-samples/jpa
 ```
 
 3. Create a Java Open Liberty component.
@@ -164,24 +192,24 @@ In this example we will use odo to manage a sample [Java MicroServices JPA appli
 - If you want the application to be built and deployed using Maven:
 
 ```shell
-> odo create java-openliberty mysboproj
+odo create java-openliberty mysboproj
 ```
 
 - If you want the application to be built and deployed using Gradle:
 
 ```shell
-> odo create java-openliberty-gradle mysboproj
+odo create java-openliberty-gradle mysboproj
 ```
 
 4. Push the application to the cluster.
 
 ```shell
-> odo push 
+odo push 
 ```
 
 The application is now deployed to the cluster - you can view the status of the cluster and the application test results by streaming the openshift logs to the terminal
 ```shell
-> odo log
+odo log
 ```
 
 Notice the failing tests due to an UnknownDatabaseHostException:
@@ -226,7 +254,7 @@ This issue occurs because the application, currently, does not have access to da
 Since the PostgreSQL Operator we installed in above step is available only in `my-postgresql-operator-dev4devs-com` namespace, let's first make sure that odo uses this namespace to perform any tasks:
 
 ```shell
-> odo project set my-postgresql-operator-dev4devs-com
+odo project set my-postgresql-operator-dev4devs-com
 ```
 
 We can use the PostgreSQL Operator's default configuration to start a Postgres database, but since our application requires specific information about the database, lets make sure that information is properly populated in the database service we start.
@@ -234,7 +262,7 @@ We can use the PostgreSQL Operator's default configuration to start a Postgres d
 1. Display the service providers and services available.
 
 ```shell
-> odo catalog list services
+odo catalog list services
 
 Services available through Operators
 NAME                                CRDs
@@ -245,18 +273,21 @@ service-binding-operator.v0.9.1     ServiceBinding, ServiceBinding
 2. Generate the yaml config of the Database service provided by the postgresql-operator.v0.1.1 operator and store it in a file.
 
 ```shell
-> odo service create postgresql-operator.v0.1.1/Database --dry-run > db.yaml
+odo service create postgresql-operator.v0.1.1/Database --dry-run > db.yaml
 ```
 
-3. Modify the database name, user, and password values under the `spec:` section in `db.yaml`.
+3. Open db.yaml and do the following:
+
+Customize the database name, user, and password values under the `spec:` section as shown:
 
 ```yaml
+spec:
   databaseName: "sampledb"
   databasePassword: "samplepwd"
   databaseUser: "sampleuser"
 ```
 
-4. Add the needed annotations under the `metadata:` section in `db.yaml`.
+Customize the resource instance name and add the needed annotations under the `metadata` section as shown:
 
 ```yaml
 metadata:
@@ -267,16 +298,18 @@ metadata:
     service.binding/db_user: 'path={.spec.databaseUser}'
 ```
 
-5. Generate the Database service devfile configuration.
+Adding the annotations ensures that the Service Binding Operator will inject the `databaseName`, `databasePassword` and `databaseUser` spec values into the application. Note that the instance name you configure will be used as part of the name of various artifacts and resource references. Be sure to change it.
+
+4. Generate the Database service devfile configuration.
 
 ```shell
-> odo service create --from-file db.yaml
+odo service create --from-file db.yaml
 ```
 
-6. Push the updates to the cluster.
+5. Push the updates to the cluster.
 
 ```shell
-> odo push
+odo push
 ```
 
 This action creates a Dev4Ddevs Database resource instance, which in turn triggers the creation of a PostgreSQL database instance in the `my-postgresql-operator-dev4devs-com` namespace.
@@ -288,7 +321,12 @@ The only thing that remains is to bind the PostgreSQL database data to the appli
 1. List the available services to which the application can be bound. The PostgreSQL database service should be listed.
 
 ```shell
-> odo service list
+odo service list
+```
+
+Output:
+
+```shell
 NAME                        MANAGED BY ODO      STATE      AGE
 Database/sampledatabase     Yes (mysboproj)     Pushed     50s
 ```
@@ -296,13 +334,13 @@ Database/sampledatabase     Yes (mysboproj)     Pushed     50s
 2. Generate the service binding devfile configuration.
 
 ```shell
-> odo link Database/sampledatabase
+odo link Database/sampledatabase
 ```
 
 3. push the updates to the cluster.
 
 ```shell
-> odo push
+odo push
 ```
 
 When the updates are pushed to the cluster, a secret containing the database connection information is created and the pod hosting the application is restarted. The new pod now contains the database connection information, from the mentioned secret, as environment variables.
@@ -316,7 +354,7 @@ When the updates are pushed to the cluster, a secret containing the database con
 To see the newly set environment variables containing database connection information, issue the following command:
 
 ```shell
-> odo exec -- bash -c 'export | grep DATABASE'
+odo exec -- bash -c 'export | grep DATABASE'
 ```
 
 Output:
@@ -336,19 +374,19 @@ declare -x DATABASE_DB_USER="sampleuser"
 - Create the URL.
 
 ```shell
-> odo url create --host $(minikube ip).nip.io
+odo url create --host $(minikube ip).nip.io
 ```
 
 - Push the data to the cluster to activate it.
 
 ```shell
-> odo push
+odo push
 ```
 
 - To see the URL that was created, list the URL's associated to the application component.
 
 ```shell
-> odo url list
+odo url list
 ```
 
 Output:
