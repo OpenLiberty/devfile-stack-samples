@@ -36,7 +36,7 @@ Navigate to the `Operators`->`OperatorHub` in the OpenShift console and in the `
 
 ![Service Binding Operator as shown in OperatorHub](./assets/SBO.jpg)
 
-#### Installing the DB operator
+#### Installing the DB Operator
 
 Before installing this operator, create the project/namespace under which the application will be deployed. This operator is namespace scoped, so it needs to be installed in the same namespace where the application will be deployed.
 
@@ -50,6 +50,31 @@ Access your Openshift Console and install the Dev4Devs PostgreSQL Operator from 
 
 - NOTE: During the installation of this operator, be sure to pick the newly created `service-binding-demo` as the namespace in which to install it.
 
+#### Providing Service Resource Access to the Service Binding Operator
+
+Starting with v0.10.0, the Service Binding Operator, requires explicit permissions to access service resources.
+
+Create a ClusterRole resource.
+
+```shell
+cat <<EOF | kubectl apply -f-
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: sbo-service-view
+  labels:
+    service.binding/controller: "true"
+rules:
+  - apiGroups:
+      - postgresql.dev4devs.com
+    resources:
+      - databases
+    verbs:
+      - get
+      - list
+EOF
+```
+
 ### Application Developer
 
 #### Login to your cluster and clone the demo JPA microservice application
@@ -61,8 +86,8 @@ In this example we will use odo to manage a sample [JPA application](https://git
 2. Clone the application repository.
 
 ```shell
-> git clone https://github.com/OpenLiberty/application-stack-samples.git && \
-  cd application-stack-samples/jpa
+git clone https://github.com/OpenLiberty/application-stack-samples.git && \
+cd application-stack-samples/jpa
 ```
 
 3. Create a Java Open Liberty component.
@@ -70,19 +95,19 @@ In this example we will use odo to manage a sample [JPA application](https://git
 - If you want the application to be built and deployed using Maven:
 
 ```shell
-> odo create java-openliberty mysboproj
+odo create java-openliberty mysboproj
 ```
 
 - If you want the application to be built and deployed using Gradle:
 
 ```shell
-> odo create java-openliberty-gradle mysboproj
+odo create java-openliberty-gradle mysboproj
 ```
 
 4. Push the application to the cluster.
 
 ```shell
-> odo push 
+odo push 
 ```
 
 You might see a delay or even something looking like an error message if the stack image needs to be pulled, so give it a bit of time.  Eventually you should see:
@@ -95,7 +120,7 @@ Pushing devfile component "mysboproj"
 5. The application is now deployed to the cluster - you can view the status of the cluster and the application test results by streaming the openshift logs to the terminal
 
 ```shell
-> odo log
+odo log
 ```
 
 Notice the failing tests due to an UnknownDatabaseHostException:
@@ -142,8 +167,12 @@ We can use the PostgreSQL Operator's default configuration to start a Postgres d
 1. Display the service providers and services available.
 
 ```shell
-> odo catalog list services
+odo catalog list services
+```
 
+Output:
+
+```shell
 Services available through Operators
 NAME                                CRDs
 postgresql-operator.v0.1.1          Backup, Database
@@ -153,18 +182,21 @@ service-binding-operator.v0.9.1     ServiceBinding, ServiceBinding
 2. Generate the yaml config of the Database service provided by the postgresql-operator.v0.1.1 operator and store it in a file.
 
 ```shell
-> odo service create postgresql-operator.v0.1.1/Database --dry-run > db.yaml
+odo service create postgresql-operator.v0.1.1/Database --dry-run > db.yaml
 ```
 
-3. Modify the database name, user, and password values under the `spec:` section in `db.yaml`.
+3. Open db.yaml and do the following:
+
+Customize the database name, user, and password values under the `spec:` section as shown:
 
 ```yaml
+spec:
   databaseName: "sampledb"
   databasePassword: "samplepwd"
   databaseUser: "sampleuser"
 ```
 
-4. Add the needed annotations under the `metadata:` section in `db.yaml`.
+Customize the resource instance name and add the needed annotations under the `metadata` section as shown:
 
 ```yaml
 metadata:
@@ -175,18 +207,18 @@ metadata:
     service.binding/db_user: 'path={.spec.databaseUser}'
 ```
 
-Adding the annotations ensures that the Service Binding Operator will inject the `databaseName`, `databasePassword` and `databaseUser` spec values into the application.
+Adding the annotations ensures that the Service Binding Operator will inject the `databaseName`, `databasePassword` and `databaseUser` spec values into the application. Note that the instance name you configure will be used as part of the name of various artifacts and resource references. Be sure to change it.
 
-5. Generate the Database service devfile configuration.
+4. Generate the Database service devfile configuration.
 
 ```shell
-> odo service create --from-file db.yaml
+odo service create --from-file db.yaml
 ```
 
-6. Push the updates to the cluster.
+5. Push the updates to the cluster.
 
 ```shell
-> odo push
+odo push
 ```
 
 This action creates a Dev4Ddevs Database resource instance, which in turn triggers the creation of a PostgreSQL database instance in the `service-binding-demo` namespace.
@@ -198,7 +230,7 @@ The only thing that remains is to bind the PostgreSQL database data to the appli
 1. List the available services to which the application can be bound. The PostgreSQL database service should be listed.
 
 ```shell
-> odo service list
+odo service list
 NAME                        MANAGED BY ODO      STATE      AGE
 Database/sampledatabase     Yes (mysboproj)     Pushed     50s
 ```
@@ -206,13 +238,13 @@ Database/sampledatabase     Yes (mysboproj)     Pushed     50s
 2. Generate the service binding devfile configuration.
 
 ```shell
-> odo link Database/sampledatabase
+odo link Database/sampledatabase
 ```
 
 3. Push the updates to the cluster.
 
 ```shell
-> odo push
+odo push
 ```
 
 When the updates are pushed to the cluster, a secret containing the database connection information is created and the pod hosting the application is restarted. The new pod now contains the database connection information, from the mentioned secret, as environment variables.
@@ -226,7 +258,7 @@ When the updates are pushed to the cluster, a secret containing the database con
 To see the newly set environment variables containing database connection information, issue the following command:
 
 ```shell
-> odo exec -- bash -c 'export | grep DATABASE'
+odo exec -- bash -c 'export | grep DATABASE'
 ```
 
 Output:
@@ -244,7 +276,7 @@ declare -x DATABASE_DB_USER="sampleuser"
 1. Find the URL to access the application through a browser.
 
 ```shell
-> odo url list
+odo url list
 ```
 
 Output:
@@ -272,6 +304,7 @@ After you save the data to the postgreSQL database, notice that you are re-direc
 You may inspect the database instance itself and query the table to see the data in place by using the **psql** command line tool. For that, navigate to the pod hosting the database instance from the OpenShift Console, click on the terminal tab, and issue the following commands:
 
 - To access the sampledb database.
+
 ```shell
 psql sampledb
 ```
