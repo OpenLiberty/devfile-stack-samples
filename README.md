@@ -14,7 +14,7 @@
 
 [![License](https://img.shields.io/badge/License-ASL%202.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
 
-# application-stack-samples
+# devfile-stack-samples
 Samples repository showing use of java-openliberty devfile-based application stack.
 
-See https://github.com/OpenLiberty/application-stack/blob/master/README.md for getting started info
+See https://github.com/OpenLiberty/devfile-stack/blob/main/README.md for getting started info

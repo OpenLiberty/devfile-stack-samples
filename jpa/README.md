@@ -8,7 +8,7 @@ This scenario illustrates binding an odo managed Java MicroServices JPA applicat
 
 odo is a CLI tool for creating applications on OpenShift and Kubernetes. odo allows developers to concentrate on creating applications without the need to administer a cluster itself. Creating deployment configurations, build configurations, service routes and other OpenShift or Kubernetes elements are all automated by odo.
 
-Before proceeding, install the latest odo CLI (version 2.2.4+) by following the installation instructions outlined in the [odo](https://odo.dev) documentation.
+Before proceeding, install the latest odo CLI (version 2.4.0+) by following the installation instructions outlined in the [odo](https://odo.dev) documentation.
 
 ## Actions to Perform by Users in 2 Roles
 
@@ -19,22 +19,11 @@ In this example there are 2 roles:
 
 ### Cluster Admin
 
-The cluster admin needs to install 2 operators into the cluster:
+The cluster admin needs to install the backing service operator into the cluster.
 
-* Service Binding Operator (version 0.9.1+)
-* Backing Service Operator
-
-A Backing Service Operator that is "bind-able," in other
-words a Backing Service Operator that exposes binding information in secrets, config maps, status, and/or spec
-attributes. The Backing Service Operator may represent a database or other services required by
-applications. We'll use Dev4Devs PostgreSQL Operator found in the OperatorHub to
-demonstrate a sample use case.
-
-#### Installing the Service Binding Operator
-
-Navigate to the `Operators`->`OperatorHub` in the OpenShift console and in the `Developer Tools` category select the `Service Binding Operator` operator
-
-![Service Binding Operator as shown in OperatorHub](./assets/SBO.jpg)
+A backing service operator is an operator that represents a database or any other services required by the application. 
+In order to bound to the application, it needs to expose binding information in secrets, config maps, status, and/or spec
+attributes. We'll use Dev4Devs PostgreSQL Operator found in the OperatorHub to demonstrate a sample use case.
 
 #### Installing the DB Operator
 
@@ -46,48 +35,24 @@ Before installing this operator, create the project/namespace under which the ap
 
 Access your Openshift Console and install the Dev4Devs PostgreSQL Operator from the Operator Hub.
 
-![Service Binding Operator as shown in OperatorHub](./assets/Dev4DevsPG.jpg)
+![Dev4Devs Operator as shown in OperatorHub](./assets/Dev4DevsPG.jpg)
 
 - NOTE: During the installation of this operator, be sure to pick the newly created `service-binding-demo` as the namespace in which to install it.
 
-#### Providing Service Resource Access to the Service Binding Operator
-
-Starting with v0.10.0, the Service Binding Operator, requires explicit permissions to access service resources.
-
-Create a ClusterRole resource.
-
-```shell
-cat <<EOF | kubectl apply -f-
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: sbo-service-view
-  labels:
-    service.binding/controller: "true"
-rules:
-  - apiGroups:
-      - postgresql.dev4devs.com
-    resources:
-      - databases
-    verbs:
-      - get
-      - list
-EOF
-```
 
 ### Application Developer
 
 #### Login to your cluster and clone the demo JPA microservice application
 
-In this example we will use odo to manage a sample [JPA application](https://github.com/OpenLiberty/application-stack-samples/tree/main/jpa).
+In this example we will use odo to manage a sample [JPA application](https://github.com/OpenLiberty/devfile-stack-samples/tree/main/jpa).
 
 1. Log in to your OpenShift cluster with the `oc login` command and be sure that the current namespace is "service-binding-demo".
 
 2. Clone the application repository.
 
 ```shell
-git clone https://github.com/OpenLiberty/application-stack-samples.git && \
-cd application-stack-samples/jpa
+git clone https://github.com/OpenLiberty/devfile-stack-samples.git && \
+cd devfile-stack-samples/jpa
 ```
 
 3. Create a Java Open Liberty component.
@@ -176,7 +141,6 @@ Output:
 Services available through Operators
 NAME                                CRDs
 postgresql-operator.v0.1.1          Backup, Database
-service-binding-operator.v0.9.1     ServiceBinding, ServiceBinding
 ```
 
 2. Generate the yaml config of the Database service provided by the postgresql-operator.v0.1.1 operator and store it in a file.
@@ -207,7 +171,7 @@ metadata:
     service.binding/db_user: 'path={.spec.databaseUser}'
 ```
 
-Adding the annotations ensures that the Service Binding Operator will inject the `databaseName`, `databasePassword` and `databaseUser` spec values into the application. Note that the instance name you configure will be used as part of the name of various artifacts and resource references. Be sure to change it.
+Adding the annotations ensures that odo will inject the `databaseName`, `databasePassword` and `databaseUser` spec values into the application. Note that the instance name you configure will be used as part of the name of various artifacts and resource references. Be sure to change it.
 
 4. Generate the Database service devfile configuration.
 

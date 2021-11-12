@@ -19,7 +19,7 @@ metadata:
   name: java-ol-m2-volume
   description: Java application devfile using a volume to store the maven m2 cache
 parent:
-  uri: "https://github.com/OpenLiberty/application-stack/releases/download/maven-0.7.0/devfile.yaml"
+  uri: "https://github.com/OpenLiberty/devfile-stack/releases/download/maven-0.7.0/devfile.yaml"
   components:
     - name: dev
       container:

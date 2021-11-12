@@ -107,7 +107,7 @@ minikube addons enable olm
 ```
 
 ### Installing odo
-Please follow the installation instructions outlined in the [odo](https://odo.dev) documentation to install the latest odo CLI (version 2.2.4+).
+Please follow the installation instructions outlined in the [odo](https://odo.dev) documentation to install the latest odo CLI (version 2.4.0+).
 
 ## Actions to Perform by Users in 2 Roles
 
@@ -118,73 +118,37 @@ In this example there are 2 roles:
 
 ### Cluster Admin
 
-The cluster admin needs to install 2 Operators into the cluster:
+The cluster admin needs to install the backing service operator into the cluster.
 
-* Service Binding Operator (version 0.9.1+)
-* A Backing Service Operator
-
-A Backing Service Operator that is "bind-able," in other
-words a Backing Service Operator that exposes binding information in secrets, config maps, status, and/or spec
-attributes. The Backing Service Operator may represent a database or other services required by
-applications. We'll use Dev4Devs PostgreSQL Operator found in the OperatorHub to
-demonstrate a sample use case.
-
-#### Installing the Service Binding Operator
-
-Below `kubectl` command will make the Service Binding Operator available in all namespaces on your minikube:
-```shell
-kubectl create -f https://operatorhub.io/install/service-binding-operator.yaml
-```
+A backing service operator is an operator that represents a database or any other services required by the application. 
+In order to bound to the application, it needs to expose binding information in secrets, config maps, status, and/or spec
+attributes. We'll use Dev4Devs PostgreSQL Operator found in the OperatorHub to demonstrate a sample use case.
 
 #### Installing the DB operator
 
 Below `kubectl` command will make the PostgreSQL Operator available in `my-postgresql-operator-dev4devs-com` namespace of your minikube cluster:
+
 ```shell
 kubectl create -f https://operatorhub.io/install/postgresql-operator-dev4devs-com.yaml
 ```
 **NOTE**: This Operator will be installed in the "my-postgresql-operator-dev4devs-com" namespace and will be usable from this namespace only.
 
-#### Providing Service Resource Access to the Service Binding Operator
-
-Starting with v0.10.0, the Service Binding Operator, requires explicit permissions to access service resources.
-
-Create a ClusterRole resource.
-
-```shell
-cat <<EOF | kubectl apply -f-
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: sbo-service-view
-  labels:
-    service.binding/controller: "true"
-rules:
-  - apiGroups:
-      - postgresql.dev4devs.com
-    resources:
-      - databases
-    verbs:
-      - get
-      - list
-EOF
-```
-
 ### Application Developer
 
 #### Importing the demo Java MicroService JPA application
 
-In this example we will use odo to manage a sample [Java MicroServices JPA application](https://github.com/OpenLiberty/application-stack-samples.git).
+In this example we will use odo to manage a sample [Java MicroServices JPA application](https://github.com/OpenLiberty/devfile-stack-samples.git).
 
 1. Clone the sample app repo to your system.
 
 ```shell
-git clone https://github.com/OpenLiberty/application-stack-samples.git
+git clone https://github.com/OpenLiberty/devfile-stack-samples.git
 ```
 
 2. `cd` to the sample JPA application.
 
 ```shell
-cd ./application-stack-samples/jpa
+cd ./devfile-stack-samples/jpa
 ```
 
 3. Create a Java Open Liberty component.
@@ -267,7 +231,6 @@ odo catalog list services
 Services available through Operators
 NAME                                CRDs
 postgresql-operator.v0.1.1          Backup, Database
-service-binding-operator.v0.9.1     ServiceBinding, ServiceBinding
 ```
 
 2. Generate the yaml config of the Database service provided by the postgresql-operator.v0.1.1 operator and store it in a file.
@@ -298,7 +261,7 @@ metadata:
     service.binding/db_user: 'path={.spec.databaseUser}'
 ```
 
-Adding the annotations ensures that the Service Binding Operator will inject the `databaseName`, `databasePassword` and `databaseUser` spec values into the application. Note that the instance name you configure will be used as part of the name of various artifacts and resource references. Be sure to change it.
+Adding the annotations ensures that odo will inject the `databaseName`, `databasePassword` and `databaseUser` spec values into the application. Note that the instance name you configure will be used as part of the name of various artifacts and resource references. Be sure to change it.
 
 4. Generate the Database service devfile configuration.
 

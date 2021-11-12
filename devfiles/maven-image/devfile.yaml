@@ -23,7 +23,7 @@ starterProjects:
   - name: user-app
     git:
       remotes:
-        origin: 'https://github.com/OpenLiberty/application-stack-starters.git'
+        origin: 'https://github.com/OpenLiberty/devfile-stack-starters.git'
 components:
   - name: dev
     container:

@@ -43,7 +43,7 @@
         <liberty.var.default.http.port>9080</liberty.var.default.http.port>
         <liberty.var.default.https.port>9443</liberty.var.default.https.port>
         <liberty.var.app.path>/api</liberty.var.app.path>
-        <version.liberty-maven-plugin>3.4</version.liberty-maven-plugin>
+        <version.liberty-maven-plugin>3.5</version.liberty-maven-plugin>
     </properties>
 
     <dependencies>
@@ -51,7 +51,7 @@
         <dependency>
             <groupId>org.eclipse.microprofile</groupId>
             <artifactId>microprofile</artifactId>
-            <version>4.0.1</version>
+            <version>4.1</version>
             <type>pom</type>
             <scope>provided</scope>
         </dependency>
@@ -138,7 +138,7 @@
                     <stripVersion>true</stripVersion>
                     <serverStartTimeout>360</serverStartTimeout>
                     <copyDependencies>
-                        <location>${project.build.directory}/liberty/wlp/usr/shared/resources</location>
+                        <location>/opt/ol/wlp/usr/shared/resources</location>
                         <dependency>
                             <groupId>mysql</groupId>
                             <artifactId>mysql-connector-java</artifactId>
