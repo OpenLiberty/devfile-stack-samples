@@ -24,7 +24,7 @@ The provided devfile allows you to start developing your maven built application
 cd <your project root dir>
 ```
 ```
-$ curl -L https://raw.githubusercontent.com/OpenLiberty/application-stack-samples/main/devfiles/maven-image/devfile.yaml -o devfile.yaml  
+$ curl -L https://raw.githubusercontent.com/OpenLiberty/devfile-stack-samples/main/devfiles/maven-image/devfile.yaml -o devfile.yaml  
 ```
 
 2. Create your application component.

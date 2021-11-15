@@ -18,7 +18,7 @@ configurations {
 }
 
 dependencies {
-    providedCompile 'org.eclipse.microprofile:microprofile:4.0.1'
+    providedCompile 'org.eclipse.microprofile:microprofile:4.1'
     providedCompile 'jakarta.platform:jakarta.jakartaee-api:8.0.0'
     postgresql 'org.postgresql:postgresql:42.2.23'
     testImplementation 'org.slf4j:slf4j-log4j12:1.7.31'
@@ -35,7 +35,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'io.openliberty.tools:liberty-gradle-plugin:3.2.1'
+        classpath 'io.openliberty.tools:liberty-gradle-plugin:3.3'
     }
 }
 

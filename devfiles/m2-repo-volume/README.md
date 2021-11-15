@@ -25,7 +25,7 @@ Sample devfile for creating and mounting a persistent volume to use as the Maven
 cd <your project root dir>
 ```
 ```
-$ curl -L https://raw.githubusercontent.com/OpenLiberty/application-stack-samples/main/devfiles/m2-repo-volume/devfile.yaml -o devfile.yaml  
+$ curl -L https://raw.githubusercontent.com/OpenLiberty/devfile-stack-samples/main/devfiles/m2-repo-volume/devfile.yaml -o devfile.yaml  
 ```
 
 2. Create your application component.
