@@ -18,7 +18,7 @@ schemaVersion: 2.1.0
 metadata:
   name: java-ol-gradle-image
   version: 0.0.1
-  description: Java application devfile using an offical gradle image
+  description: Java application devfile using an official gradle image
 components:
   - name: dev
     container:
@@ -46,7 +46,7 @@ commands:
                       echo "The component was already built. The devBuild command is not run." && exit 0;
                     else
                       echo "Running devBuild command ..." &&
-                      gradle -Dgradle.user.home=/home/user/.gradle assemble -Pliberty.runtime.version=21.0.0.9 &&
+                      gradle -Dgradle.user.home=/home/user/.gradle assemble -Pliberty.runtime.version=21.0.0.12 &&
                       touch ./.disable-bld-cmd;
                     fi
       workingDir: /projects
@@ -57,7 +57,7 @@ commands:
   - id: run
     exec:
       component: dev 
-      commandLine: gradle -Dgradle.user.home=/home/user/.gradle libertyDev -Pliberty.runtime.version=21.0.0.9 --libertyDebug=false --hotTests --compileWait=3
+      commandLine: gradle -Dgradle.user.home=/home/user/.gradle libertyDev -Pliberty.runtime.version=21.0.0.12 --libertyDebug=false --hotTests --compileWait=3
       workingDir: /projects
       hotReloadCapable: true
       group:
@@ -66,7 +66,7 @@ commands:
   - id: run-test-off
     exec:
       component: dev
-      commandLine: gradle -Dgradle.user.home=/home/user/.gradle libertyDev -Pliberty.runtime.version=21.0.0.9 --libertyDebug=false
+      commandLine: gradle -Dgradle.user.home=/home/user/.gradle libertyDev -Pliberty.runtime.version=21.0.0.12 --libertyDebug=false
       workingDir: /projects
       hotReloadCapable: true
       group:
@@ -75,7 +75,7 @@ commands:
   - id: debug
     exec:
       component: dev
-      commandLine: gradle -Dgradle.user.home=/home/user/.gradle libertyDev -Pliberty.runtime.version=21.0.0.9 --libertyDebugPort=${DEBUG_PORT} -Pliberty.server.env.WLP_DEBUG_REMOTE=y
+      commandLine: gradle -Dgradle.user.home=/home/user/.gradle libertyDev -Pliberty.runtime.version=21.0.0.12 --libertyDebugPort=${DEBUG_PORT} -Pliberty.server.env.WLP_DEBUG_REMOTE=y
       workingDir: /projects
       hotReloadCapable: true
       group:
