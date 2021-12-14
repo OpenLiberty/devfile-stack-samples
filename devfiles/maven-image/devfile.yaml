@@ -17,7 +17,7 @@
 schemaVersion: 2.1.0
 metadata:
   version: 0.1.0
-  description: Java application devfile using an offical maven image
+  description: Java application devfile using an official maven image
   name: java-ol-maven-image
 starterProjects:
   - name: user-app
@@ -51,7 +51,7 @@ commands:
                       echo "The component was already built. The devBuild command is not run." && exit 0;
                     else
                       echo "Running devBuild command ..." &&
-                      mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.9 package &&
+                      mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.12 package &&
                       touch ./.disable-bld-cmd;
                  fi
       workingDir: /projects
@@ -62,7 +62,7 @@ commands:
   - id: run
     exec:
       component: dev
-      commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.9 -Ddebug=false -DhotTests=true -DcompileWait=3 liberty:dev
+      commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.12 -Ddebug=false -DhotTests=true -DcompileWait=3 liberty:dev
       workingDir: /projects
       hotReloadCapable: true
       group:
@@ -71,7 +71,7 @@ commands:
   - id: run-test-off
     exec:
       component: dev
-      commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.9 -Ddebug=false liberty:dev
+      commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.12 -Ddebug=false liberty:dev
       workingDir: /projects
       hotReloadCapable: true
       group:
@@ -80,7 +80,7 @@ commands:
   - id: debug
     exec:
       component: dev
-      commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.9 -DdebugPort=${DEBUG_PORT} liberty:dev -Dliberty.env.WLP_DEBUG_REMOTE=y
+      commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository -Dliberty.runtime.version=21.0.0.12 -DdebugPort=${DEBUG_PORT} liberty:dev -Dliberty.env.WLP_DEBUG_REMOTE=y
       workingDir: /projects
       hotReloadCapable: true
       group:

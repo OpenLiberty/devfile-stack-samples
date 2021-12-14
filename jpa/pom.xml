@@ -43,7 +43,7 @@
         <liberty.var.default.http.port>9080</liberty.var.default.http.port>
         <liberty.var.default.https.port>9443</liberty.var.default.https.port>
         <liberty.var.app.path>/api</liberty.var.app.path>
-        <version.liberty-maven-plugin>3.5</version.liberty-maven-plugin>
+        <version.liberty-maven-plugin>3.5.1</version.liberty-maven-plugin>
     </properties>
 
     <dependencies>
@@ -76,8 +76,8 @@
         <!-- For tests -->
         <dependency>
             <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.31</version>
+            <artifactId>slf4j-jdk14</artifactId>
+            <version>1.7.32</version>
             <scope>test</scope>
         </dependency>
         <dependency>
